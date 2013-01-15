@@ -2,22 +2,22 @@
 class Store extends CI_Model
 {
     // fields which can be automatically populated
-    private fields=array('storeid','mallid','typeid','manager_name','name','email','bio','facebook','twitter','website','phone');
+    private $fields=array('storeid','mallid','typeid','manager_name','name','email','bio','facebook','twitter','website','phone');
     
-    public storeid=false;
-    public mallid=false;
-    public typeid=false;
-    public manager_name=false;
-    public name=false;
-    public email=false;
-    public bio=false;
-    public facebook=false;
-    public twitter=false;
-    public website=false;
-    public phone=false;
+    public $storeid=false;
+    public $mallid=false;
+    public $typeid=false;
+    public $manager_name=false;
+    public $name=false;
+    public $email=false;
+    public $bio=false;
+    public $facebook=false;
+    public $twitter=false;
+    public $website=false;
+    public $phone=false;
     
     //this needs special processing
-    public typename=false;
+    public $typename=false;
     
     function __construct()
     {

@@ -293,7 +293,7 @@ $config['global_xss_filtering'] = FALSE;
 | 'csrf_cookie_name' = The cookie name
 | 'csrf_expire' = The number in seconds the token should expire.
 */
-$config['csrf_protection'] = TRUE;
+$config['csrf_protection'] = FALSE;
 $config['csrf_token_name'] = 'csrf_mallcrawl';
 $config['csrf_cookie_name'] = 'csrf_mallcrawl';
 $config['csrf_expire'] = 7200;
@@ -357,8 +357,5 @@ $config['rewrite_short_tags'] = FALSE;
 */
 $config['proxy_ips'] = '';
 
-$config['mall_assets'] = 'assets/malls/';
-$config['store_assets'] = 'assets/stores/';
-$config['user_assets'] = 'assets/users/';
 /* End of file config.php */
 /* Location: ./application/config/config.php */

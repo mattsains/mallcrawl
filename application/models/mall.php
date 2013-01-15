@@ -2,33 +2,45 @@
 class Mall extends CI_Model
 {
     // fields which can be automatically populated
-    private fields=array('mallid','ownerid','name','x_coord','y_coord','secret','manager_name','bio','website','twitter','facebook','phone','email');
+    private $fields=array('mallid','ownerid','name','x_coord','y_coord','secret','manager_name','bio','website','twitter','facebook','phone','email');
     
-    public mallid=false;
-    public ownerid=false;
-    public name=false;
-    public x_coord=false;
-    public y_coord=false;
-    public secret=false; //lol, but it isn't too big a secret!
-    public manager_name=false;
-    public bio=false;
-    public website=false;
-    public twitter=false;
-    public facebook=false;
-    public phone=false;
-    public email=false;
+    public $mallid=false;
+    public $ownerid=false;
+    public $name=false;
+    public $x_coord=false;
+    public $y_coord=false;
+    public $secret=false; //lol, but it isn't too big a secret!
+    public $manager_name=false;
+    public $bio=false;
+    public $website=false;
+    public $twitter=false;
+    public $facebook=false;
+    public $phone=false;
+    public $email=false;
     
     //fields needing some processing. Incidentally, these all happen to be paths
-    public logo=false;
-    public map=false;
-    public polygons=false;
+    public $logo=false;
+    public $map=false;
+    public $polygons=false;
     
     function __construct()
     {
         parent::__construct();
         $this->load->database();
     }
-    
+    function nearest($x_coord, $y_coord, $limit)
+    {
+        $x_coord=(double)$x_coord;
+        $y_coord=(double)$y_coord;
+        $limit=(int)$limit;
+        
+        $query=$this->db->query("SELECT `mallid` FROM `malls` ORDER BY SQRT(POWER(`x_coord`-$x_coord,2)+POWER(`y_coord`-$y_coord,2))");
+        
+        $malls=array();
+        foreach($query->result() as $row)
+            $malls[]=$row->mallid;
+        return $malls;
+    }
     /// Returns true if the mallid actually exists
     function exists($mallid)
     {
@@ -94,9 +106,9 @@ class Mall extends CI_Model
         $logopath=$result->logo;
         $mappath=$result->map;
         $polygonpath=$result->polygon_path;
-        $this->logo=base_url().$this->config->item('mall_assets').$logopath;
-        $this->map=base_url().$this->config->item('mall_assets').$mappath;
-        $this->polygons=base_url().$this->config->item('mall_assets').$polygonpath;
+        $this->logo=base_url().'assets/malls/'.$logopath;
+        $this->map=base_url().'assets/malls/'.$mappath;
+        $this->polygons=base_url().'assets/malls/'.$polygonpath;
         return true;
     }
 }
