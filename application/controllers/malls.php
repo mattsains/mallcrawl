@@ -25,6 +25,7 @@ class Malls extends CI_Controller
         
         send_json(array('malls'=>$mall_object));
     }
+    
     /// Adds a mall to a user's list
     /// POST: mallid, access_token
     public function add()
