@@ -44,10 +44,10 @@ class Mall extends CI_Model
     /// Returns true if the mallid actually exists
     function exists($mallid)
     {
-        $mall=(int)$mall;
+        $mallid=(int)$mallid;
         
         $this->db->select('mallid');
-        $this->db->where('mallid',$mall);
+        $this->db->where('mallid',$mallid);
         $query=$this->db->get('malls');
         return $query->num_rows()>0;
     }
@@ -85,17 +85,17 @@ class Mall extends CI_Model
     /// populates all the fields
     function select($mallid)
     {
-        $mall=(int)$mall;
-        if (!$this->exists($mall)) return false;
+        $mallid=(int)$mallid;
+        if (!$this->exists($mallid)) return false;
         
-        $this->db->where('mallid',$mall);
+        $this->db->where('mallid',$mallid);
         $query=$this->db->get('malls');
         
         $result=$query->result();
         $result=$result[0];//there should only be one mall with a unique id       
         
         //auto-populate fields
-        foreach ($fields as $field)
+        foreach ($this->fields as $field)
         {
             $this->$field=$result->$field?
                             $result->$field : false;

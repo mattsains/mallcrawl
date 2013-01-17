@@ -15,6 +15,13 @@ class Malls extends CI_Controller
         
         $this->load->model('mall');
         
-        send_json(array('malls'=>$this->mall->nearest($x_coord,$y_coord,10)));
+        $mall_object=array();
+        foreach ($this->mall->nearest($x_coord,$y_coord,10) as $mall)
+        {
+            $this->mall->select($mall);
+            $mall_object[]=array('mallid'=>$mall, 'name'=>$this->mall->name, 'x_coord'=>$this->mall->x_coord, 'y_coord'=>$this->mall->y_coord);
+        }
+        
+        send_json(array('malls'=>$mall_object));
     }
 }
