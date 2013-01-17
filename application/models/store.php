@@ -99,17 +99,39 @@ class Store extends CI_Model
     }
     
     /// returns a list of categories that the store belongs to
-    function categories()
+    function categories($storeid=false)
     {
-        if (!$this->storeid) return false;
-        $this->storeid=(int)$this->storeid;
+        if (!$storeid)
+        {
+            if (!$this->storeid)
+                return false;
+            else $storeid=$this->storeid;
+        }
+        $storeid=(int)$storeid;
         
         $query=$this->db->query('SELECT `categories`.`categoryid` AS `categoryid`, `categories`.`text` AS `text` FROM `categories`,`category-members`'.
-                                ' WHERE `category-members`.`storeid`='.$this->storeid.
+                                ' WHERE `category-members`.`storeid`='.$storeid.
                                 ' AND `categories`.`categoryid`=`category-members`.`categoryid`');
         $categories=array();
         foreach ($query->result() as $row)
             $categories[]=array('categoryid'=>$row->categoryid, 'categoryname'=>$row->text);
         return $categories;
+    }
+    /// Gets details about all the stores in the mall
+    function list_mall($mallid)
+    {
+        $mallid=(int)$mallid;
+        
+        $this->load->model('mall');
+        if (!$this->mall->exists($mallid)) return false;
+        
+        $query=$this->db->query('SELECT `stores`.`storeid`, `stores`.`typeid`, `types`.`text` AS `typename`, `stores`.`name`, `stores`.`manager_name`, `stores`.`email`, `stores`.`bio`, `stores`.`facebook`, `stores`.`twitter`, `stores`.`website`,`stores`.`phone`'.
+                                ' FROM `stores` LEFT JOIN `types` ON `stores`.`typeid`=`types`.`typeid`'.
+                                ' WHERE `stores`.`mallid`='.$mallid.
+                                ' ORDER BY `stores`.`name`');
+        $output=$query->result_array();
+        foreach($output as $key=>$store)
+            $output[$key]['categories']=$this->categories($output[$key]['storeid']);
+        return $output;
     }
 }

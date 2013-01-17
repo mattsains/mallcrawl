@@ -2,6 +2,7 @@
 class Malls extends CI_Controller
 {
     /// Returns a list of up to ten malls closest to a location
+    /// POST: x_coord, y_coord
     public function near()
     {
         if (!($this->input->post('x_coord') && $this->input->post('y_coord'))) 
@@ -23,5 +24,53 @@ class Malls extends CI_Controller
         }
         
         send_json(array('malls'=>$mall_object));
+    }
+    /// Adds a mall to a user's list
+    /// POST: mallid, access_token
+    public function add()
+    {
+        if (!$this->input->post('access_token'))
+            error('You did not provide a facebook access token');
+        if (!$this->input->post('mallid'))
+            error('You did not provide a mallid to add');
+        
+        $this->load->model('mall');
+        $this->load->model('user');
+        
+        $this->user->initialise_from_token($this->input->post('access_token'));
+        
+        $this->user->add_mall($this->input->post('mallid')) or error('mallid is invalid');
+        send_json($this->input->post('mallid'));
+    }
+    /// Removes a mall from the user's list
+    /// POST: mallid, access_token
+    public function remove()
+    {
+        if (!$this->input->post('access_token'))
+            error('You did not provide a facebook access token');
+        if (!$this->input->post('mallid'))
+            error('You did not provide a mallid to add');
+        
+        $this->load->model('mall');
+        $this->load->model('user');
+        
+        $this->user->initialise_from_token($this->input->post('access_token'));
+        
+        $this->user->remove_mall($this->input->post('mallid')) or error('mallid is invalid');
+        send_json($this->input->post('mallid'));
+    }
+    
+    /// Returns a list of shops at the mall
+    /// POST: mallid
+    public function shops()
+    {
+        if (!$this->input->post('mallid'))
+            error('You did not provide a mallid');
+            
+        $this->load->model('store');
+        $output=$this->store->list_mall($this->input->post('mallid'));
+        if ($output===false)
+            error('mallid is invalid');
+       send_json(array('mallid'=>$this->input->post('mallid'),'stores'=>$output));
     }
 }

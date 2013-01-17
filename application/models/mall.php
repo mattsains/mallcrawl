@@ -22,7 +22,7 @@ class Mall extends CI_Model
     public $logo=false;
     public $map=false;
     public $polygons=false;
-    
+        
     function __construct()
     {
         parent::__construct();
