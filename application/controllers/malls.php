@@ -63,9 +63,9 @@ class Malls extends CI_Controller
         send_json($mallid);
     }
     
-    /// Returns a list of shops at the mall
+    /// Returns a list of stores at the mall
     /// POST: mallid
-    public function shops()
+    public function stores()
     {
         if (!$this->input->post('mallid'))
             error('You did not provide a mallid');
