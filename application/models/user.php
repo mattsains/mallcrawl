@@ -9,6 +9,8 @@ class User extends CI_Model
     
     public $malls=false;
     
+    public $stores=false; //for some reason, these are called stars
+    
     function __construct()
     {
         parent::__construct();
@@ -47,7 +49,7 @@ class User extends CI_Model
             $this->noupload=false;
         } else //otherwise make sure he is allowed to upload images
             $this->noupload=!!$query->result()[0]->no_upload;
-        
+        //favourite malls
         $this->db->select('mallid');
         $this->db->where('userid',$this->userid);
         $query=$this->db->get('mall-lists');
@@ -56,6 +58,15 @@ class User extends CI_Model
         
         foreach($query->result() as $row)
             $this->malls[]=(int)$row->mallid;
+        //favourite stores
+        $this->db->select('storeid');
+        $this->db->where('userid',$this->userid);
+        $query=$this->db->get('store-lists');
+        
+        $this->stores=array();
+        
+        foreach($query->result() as $row)
+            $this->stores[]=(int)$row->storeid;
             
         return $this->userid;
     }
@@ -92,6 +103,42 @@ class User extends CI_Model
         
         $this->db->delete('mall-lists',array('userid'=>$this->userid, 'mallid'=>$mallid));
         $this->malls[]=array_diff($this->malls, array($mallid));//remove from array
+        
+        return true;
+    }
+    
+    /// Adds a store to a user's star list
+    function add_store($storeid)
+    {
+        $storeid=(int)$storeid;
+        $this->load->model('store');
+        
+        if (!$this->userid) return false;
+        if (!$this->store->exists($storeid)) return false;
+        
+        if (in_array($storeid,$this->stores)) // already has this store in the list
+            return true; //swallow silently.
+        
+        $this->db->insert('store-lists',array('userid'=>$this->userid, 'storeid'=>$storeid));
+        $this->stores[]=$storeid;
+        
+        return true;
+    }
+    
+    /// Removes a store from a user's list
+    function remove_store($storeid)
+    {
+        $storeid=(int)$storeid;
+        $this->load->model('store');
+        
+        if (!$this->userid) return false;
+        if (!$this->store->exists($storeid)) return false;
+        
+        if (!in_array($storeid,$this->stores)) // does not have the store in the list
+            return true; //swallow silently.
+        
+        $this->db->delete('store-lists',array('userid'=>$this->userid, 'storeid'=>$storeid));
+        $this->stores[]=array_diff($this->stores, array($storeid));//remove from array
         
         return true;
     }
