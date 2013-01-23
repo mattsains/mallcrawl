@@ -138,7 +138,6 @@ class Store extends CI_Model
     
     /// Returns a list of image URLs, their author, and timestamp
     /// Access token seems needed for facebook batch jobs
-    // TODO: This code is incredible hacky and must be changed. For example, there is almost no error checking
     function images($token)
     {
         if (!$this->storeid)
@@ -158,36 +157,48 @@ class Store extends CI_Model
             if (!in_array($row->userid,$userids))
                 $userids[]=$row->userid;
         }
-        
-        //get everyone's name and uname from facebook all at once
-        $requests='[';//unfortunately we have to construct this JSON object manually. The next few lines of code are UGLY.
-        foreach($userids as $uid)
-            $requests.='{"method":"GET", "relative_url":"'.$uid.'?fields=name,username"}, ';
-        $requests=substr($requests,0,-2).']';
-        
-        // make request
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "https://graph.facebook.com/"); 
-        curl_setopt($ch, CURLOPT_POSTFIELDS, "access_token=$token&batch=$requests");
-        curl_setopt($ch, CURLOPT_FAILONERROR, false);
-        curl_setopt($ch, CURLOPT_HTTP200ALIASES, (array)400);
-        curl_setopt($ch, CURLOPT_CAINFO, "c:/xampp/php/ext/cacert.crt");//DEBUG ONLY
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
-        $response = json_decode(curl_exec($ch));
-        curl_close($ch);  
-        
-        foreach ($response as $response_item)
+        //only fifty requests are allowed at once
+        for ($i=0; $i<count($userids); $i+=40)
         {
-            if (ISSET($response_item) && $response_item->code==200) //success
+            //get a batch of 20 people's names and unames from facebook at once
+            $requests='[';//unfortunately we have to construct this JSON object manually. The next few lines of code are UGLY.
+            foreach(array_slice($userids,$i,40) as $uid)
+                $requests.='{"method":"GET", "relative_url":"'.$uid.'?fields=name,username"}, ';
+            $requests=substr($requests,0,-2).']';
+            
+            // make request
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, "https://graph.facebook.com/"); 
+            curl_setopt($ch, CURLOPT_POSTFIELDS, "access_token=$token&batch=$requests");
+            curl_setopt($ch, CURLOPT_FAILONERROR, false);
+            curl_setopt($ch, CURLOPT_HTTP200ALIASES, (array)400);
+            curl_setopt($ch, CURLOPT_CAINFO, "c:/xampp/php/ext/cacert.crt");//DEBUG ONLY
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+            $response = json_decode(curl_exec($ch));
+            curl_close($ch);
+            
+            if (isset($response->error))
+                    error($response->error->message);
+                    
+            foreach ($response as $response_item)
             {
-                $person=json_decode($response_item->body);
+                if (!isset($response_item)) 
+                    break; //facebook ran out of computation time. Can't do anything this side, so just try keep going
                 
-                foreach($output as $output_key=>$output_item) //for each photo by this user, add their username and name to the photo
-                    if ($output_item['userid']==$person->id)
-                    {
-                        $output[$output_key]['username']=$person->username;
-                        $output[$output_key]['name']=$person->name;
-                    }
+                if (isset($response_item->error))
+                    error($response_item->error->message);
+
+                if ($response_item->code==200) //success
+                {
+                    $person=json_decode($response_item->body);
+                    
+                    foreach($output as $output_key=>$output_item) //for each photo by this user, add their username and name to the photo
+                        if ($output_item['userid']==$person->id)
+                        {
+                            $output[$output_key]['username']=$person->username;
+                            $output[$output_key]['name']=$person->name;
+                        }
+                }
             }
         }
         return $output;
