@@ -40,6 +40,7 @@
 
 $route['default_controller'] = "welcome";
 $route['404_override'] = '';
+$route['stores/images/add'] = 'stores/images_add';
 
 
 /* End of file routes.php */

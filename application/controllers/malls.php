@@ -17,15 +17,30 @@ class Malls extends CI_Controller
         $this->load->model('mall');
         
         $mall_object=array();
-        foreach ($this->mall->nearest($x_coord,$y_coord,10) as $mall)
+        foreach ($this->mall->nearest($x_coord,$y_coord,10) as $mallid)
         {
-            $this->mall->select($mall);
-            $mall_object[]=array('mallid'=>$mall, 'name'=>$this->mall->name, 'x_coord'=>$this->mall->x_coord, 'y_coord'=>$this->mall->y_coord);
+            $this->mall->select($mallid);
+            $mall_object[]=array('mallid'=>$mallid, 'name'=>$this->mall->name, 'x_coord'=>$this->mall->x_coord, 'y_coord'=>$this->mall->y_coord, 
+                        'manager_name'=>$this->mall->manager_name, 'bio'=>$this->mall->bio, 'website'=>$this->mall->website, 'twitter'=>$this->mall->twitter, 
+                        'facebook'=>$this->mall->facebook, 'phone'=>$this->mall->phone, 'email'=>$this->mall->email, 'logo'=>$this->mall->logo, 'map'=>$this->mall->map, 'polygons'=>$this->mall->polygons);
         }
         
         send_json(array('malls'=>$mall_object));
     }
     
+    ///Returns information about a specific mall
+    public function index()
+    {
+        if (!$this->input->post('mallid'))
+            error('You did not provide a mallid');
+        $mallid=(int)$this->input->post('mallid');
+        
+        $this->load->model('mall');
+        $this->mall->select($mallid) or error('mallid is invalid');
+        send_json(array('mallid'=>$mallid, 'name'=>$this->mall->name, 'x_coord'=>$this->mall->x_coord, 'y_coord'=>$this->mall->y_coord, 
+                        'manager_name'=>$this->mall->manager_name, 'bio'=>$this->mall->bio, 'website'=>$this->mall->website, 'twitter'=>$this->mall->twitter, 
+                        'facebook'=>$this->mall->facebook, 'phone'=>$this->mall->phone, 'email'=>$this->mall->email, 'logo'=>$this->mall->logo, 'map'=>$this->mall->map, 'polygons'=>$this->mall->polygons));
+    }
     /// Adds a mall to a user's list
     /// POST: mallid, access_token
     public function add()

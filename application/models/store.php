@@ -146,13 +146,14 @@ class Store extends CI_Model
             error('The access token is invalid');
         
         $this->storeid=(int)$this->storeid;
-        $query=$this->db->query('SELECT `store-images`.`path`,`store-images`.`userid`, UNIX_TIMESTAMP(`store-images`.`timestamp`) AS `timestamp` FROM `store-images` ORDER BY `store-images`.`timestamp` DESC');
+        $query=$this->db->query('SELECT `store-images`.`image`, `store-images`.`thumb`, `store-images`.`userid`, UNIX_TIMESTAMP(`store-images`.`timestamp`) AS `timestamp` FROM `store-images` ORDER BY `store-images`.`timestamp` DESC');
         
         $output=array();
         $userids=array();
         foreach($query->result() as $row)
         {
-            $output[]=array('url'=>base_url().'assets/stores/'.$row->path,
+            $output[]=array('image'=>base_url().'assets/stores/'.$row->image,
+                            'thumb'=>base_url().'assets/stores/'.$row->thumb,
                             'timestamp'=>$row->timestamp, 'userid'=>$row->userid);
             if (!in_array($row->userid,$userids))
                 $userids[]=$row->userid;
@@ -202,5 +203,16 @@ class Store extends CI_Model
             }
         }
         return $output;
-    }       
+    }
+    
+    /// Adds an image to the database
+    function add_image($userid,$image,$thumb)
+    {
+        $trimfolder='assets/stores/';
+        $image=substr($image, strpos($image,$trimfolder)+strlen($trimfolder));
+        $thumb=substr($thumb, strpos($thumb,$trimfolder)+strlen($trimfolder));
+        
+        $this->db->insert('store-images', array('image'=>$image, 'thumb'=>$thumb, 'userid'=>$userid));
+        return $this->db->affected_rows()==1;
+    }
 }
