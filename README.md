@@ -79,6 +79,7 @@ Returns information about a mall:
 * `logo` - a URL to an image logo of the mall
 * `map` - a URL to an image map of the mall\*
 * `polygon` - a URL to a file describing the stores on the map. Probably XML, but that's up to you!\*
+
 \* these parameters are optional. If they are not available, they will be set as false.
 
 ###`/malls/near`
