@@ -87,7 +87,7 @@ Returns information about a mall:
 
 Returns an array called `malls` of the ten closest malls and their info (as above) sorted by closeness. The coordinates must be in decimal form (-35.12514, 12.12512) and *not* the old format (35°15'21", 12°10'33")
 
-###`stores`
+###`/malls/stores`
 *Input parameters:* `mallid`
 
 Returns an array with the stores in the mall, like this:
