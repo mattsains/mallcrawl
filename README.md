@@ -83,6 +83,7 @@ Returns information about a mall:
 \* these parameters are optional. If they are not available, they will be set as false.
 
 Here is an example:
+
     {
         "mallid": 1,
         "name": "Walmer Park",
