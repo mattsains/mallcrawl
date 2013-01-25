@@ -111,4 +111,20 @@ class Mall extends CI_Model
         $this->polygons=base_url().'assets/malls/'.$polygonpath;
         return true;
     }
+    
+    /// Returns an array of the useful properties of this object
+    public function as_array()
+    {
+        if (!$this->mallid)
+            return false;
+        
+        $return_fields=array('mallid','name','x_coord','y_coord','manager_name','bio','website','twitter','facebook','phone','email','logo','map','polygons');
+        
+        $output=array();
+        
+        foreach($return_fields as $field)
+            $output[$field]=$this->$field; //whenever I do this I feel badass
+        
+        return $output;
+    }
 }

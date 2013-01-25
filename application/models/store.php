@@ -2,11 +2,12 @@
 class Store extends CI_Model
 {
     // fields which can be automatically populated
-    private $fields=array('storeid','mallid','typeid','manager_name','name','email','bio','facebook','twitter','website','phone');
+    private $fields=array('storeid','mallid','typeid','ownerid','manager_name','name','email','bio','facebook','twitter','website','phone');
     
     public $storeid=false;
     public $mallid=false;
     public $typeid=false;
+    public $ownerid=false;
     public $manager_name=false;
     public $name=false;
     public $email=false;
@@ -17,7 +18,7 @@ class Store extends CI_Model
     public $phone=false;
     
     //this needs special processing
-    public $typename=false;
+    public $type_name=false;
     
     function __construct()
     {
@@ -95,7 +96,34 @@ class Store extends CI_Model
             $this->$field=$result->$field?
                             $result->$field : false;
         
+        // now figure out the name of the type of mall this is
+        $typeid=(int)$this->typeid;
+        $this->db->where('typeid',$typeid);
+        $query=$this->db->get('types');
+        
+        if ($query->num_rows()==1)
+        {
+            $result=$query->result()[0];
+            $this->type_name=$result->text;
+        } else $this->type_name=false;
+        
         return true;
+    }
+    
+    /// Returns an array of the useful properties of this object
+    public function as_array()
+    {
+        if (!$this->mallid)
+            return false;
+        
+        $return_fields=array('storeid','mallid','typeid','type_name','name','manager_name','bio','website','twitter','facebook','phone','email');
+        
+        $output=array();
+        
+        foreach($return_fields as $field)
+            $output[$field]=$this->$field;
+        
+        return $output;
     }
     
     /// returns a list of categories that the store belongs to
@@ -119,6 +147,7 @@ class Store extends CI_Model
     }
     
     /// Gets details about all the stores in the mall
+    /// This is a STATELESS function, it works alone.
     function list_mall($mallid)
     {
         $mallid=(int)$mallid;
@@ -138,7 +167,7 @@ class Store extends CI_Model
     
     /// Returns a list of image URLs, their author, and timestamp
     /// Access token seems needed for facebook batch jobs
-    function images($token)
+    function images($token, $fail_count=0)
     {
         if (!$this->storeid)
             return false;
@@ -154,7 +183,10 @@ class Store extends CI_Model
         {
             $output[]=array('image'=>base_url().'assets/stores/'.$row->image,
                             'thumb'=>base_url().'assets/stores/'.$row->thumb,
-                            'timestamp'=>$row->timestamp, 'userid'=>$row->userid);
+                            'timestamp'=>$row->timestamp, 
+                            'userid'=>$row->userid,
+                            'username'=>false,//these are set to false so that, if we fail to get their username from facebook, the field still exists
+                            'name'=>false);
             if (!in_array($row->userid,$userids))
                 $userids[]=$row->userid;
         }
@@ -179,15 +211,22 @@ class Store extends CI_Model
             curl_close($ch);
             
             if (isset($response->error))
-                    error($response->error->message);
+            {
+                //some facebook error. will either use recursion to try again,
+                //or die if we've already tried four times
+                facebook_error($response,$fail_count<4);
+                //we're still here, so try again
+                return $this->images($token,$fail_count+1);
+            }
                     
             foreach ($response as $response_item)
             {
                 if (!isset($response_item)) 
                     break; //facebook ran out of computation time. Can't do anything this side, so just try keep going
                 
-                if (isset($response_item->error))
-                    error($response_item->error->message);
+                if (isset($response_item->error))//just skip to the next one, I guess
+                    continue;
+                    
 
                 if ($response_item->code==200) //success
                 {
@@ -213,6 +252,9 @@ class Store extends CI_Model
         $thumb=substr($thumb, strpos($thumb,$trimfolder)+strlen($trimfolder));
         
         $this->db->insert('store-images', array('image'=>$image, 'thumb'=>$thumb, 'userid'=>$userid));
-        return $this->db->affected_rows()==1;
+        if ($this->db->affected_rows()==1)
+            return $image;
+        else
+            return false;
     }
 }

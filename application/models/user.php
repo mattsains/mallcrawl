@@ -16,7 +16,8 @@ class User extends CI_Model
         parent::__construct();
         $this->load->database();
     }
-    function initialise_from_token($token)
+    /// fail count is in case of facebook failure
+    function initialise_from_token($token,$fail_count=0)
     {
         if (!ctype_alnum($token)) //token is not alphanumeric
             error('The access token is invalid');
@@ -32,7 +33,13 @@ class User extends CI_Model
         curl_close($ch);  
 
         if (isset($response->error))
-            error($response->error->message);
+        {
+            //some facebook error. will either use recursion to try again,
+            //or die if we've already tried four times
+            facebook_error($response,$fail_count<4);
+            //we're still here, so try again
+            return $this->initialise_from_token($token,$fail_count+1);
+        }
 
         $this->userid=$response->id;
         $this->name=$response->name;

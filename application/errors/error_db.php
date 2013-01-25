@@ -1,1 +1,1 @@
-<?php header('Content-Type: application/json');?>{"server_error":{"text":"<?php echo $heading;?>","ref":"c<?php echo time();?>","can_retry":true}}<?php die();//prevents output mixed in error messages?>
+<?php header('HTTP/1.0 500 Internal Server Error');header('Content-Type: application/json');?>{"server_error":{"text":"<?php echo $heading;?>","ref":"c<?php echo time();?>","can_retry":true}}<?php die();//prevents output mixed in error messages?>

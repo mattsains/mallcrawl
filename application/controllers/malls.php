@@ -20,12 +20,10 @@ class Malls extends CI_Controller
         foreach ($this->mall->nearest($x_coord,$y_coord,10) as $mallid)
         {
             $this->mall->select($mallid);
-            $mall_object[]=array('mallid'=>$mallid, 'name'=>$this->mall->name, 'x_coord'=>$this->mall->x_coord, 'y_coord'=>$this->mall->y_coord, 
-                        'manager_name'=>$this->mall->manager_name, 'bio'=>$this->mall->bio, 'website'=>$this->mall->website, 'twitter'=>$this->mall->twitter, 
-                        'facebook'=>$this->mall->facebook, 'phone'=>$this->mall->phone, 'email'=>$this->mall->email, 'logo'=>$this->mall->logo, 'map'=>$this->mall->map, 'polygons'=>$this->mall->polygons);
+            $mall_object[]=$this->mall->as_array();
         }
         
-        send_json(array('malls'=>$mall_object));
+        send_json($mall_object);
     }
     
     ///Returns information about a specific mall
