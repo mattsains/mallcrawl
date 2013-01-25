@@ -106,6 +106,7 @@ Here is an example:
 Returns an array of the ten closest malls and their info (as above) sorted by closeness. The input coordinates must be in decimal form (-35.12514, 12.12512) and *not* the old format (35°15'21", 12°10'33")
 
 Here is an example:
+
     [
         {
             "mallid": "2",
@@ -208,6 +209,7 @@ Stores
 *Input parameters:* `storeid`
 
 Returns information about a store. Here's an example:
+
     {
         "storeid": "2",
         "mallid": "1",
