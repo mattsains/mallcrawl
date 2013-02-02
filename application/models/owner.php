@@ -10,6 +10,22 @@ class Owner extends CI_Model
         parent::__construct();
         $this->load->database();
     }
+    
+    /// Allow only A-Z, dot, hyphen and numbers
+    private function clean_uname($uname)
+    {
+        return strtolower(preg_replace("/[^a-zA-Z\.\-0-9]",'',$uname)); 
+    }
+    
+    /// Returns true if the ownerid exists
+    function exists($ownerid)
+    {
+        $this->db->select('ownerid');
+        $this->db->where('ownerid',$ownerid);
+        $query=$this->db->get('owners');
+        return $query->num_rows()>0;
+    }
+    
     /// Returns true if the username is in use
     function uname_exists($uname)
     {
@@ -18,17 +34,23 @@ class Owner extends CI_Model
         $query=$this->db->get('owners');
         return $query->num_rows()>0;
     }
-    function exists($ownerid)
+    
+    function id_by_uname($uname)
     {
+        $uname=$this->clean_uname($uname);
         $this->db->select('ownerid');
-        $this->db->where('ownerid',$ownerid);
+        $this->db->where('uname',$uname);
         $query=$this->db->get('owners');
-        return $query->num_rows()>0;
+        if ($query->num_rows()!=1)
+            return false;
+        $result=$query->result()[0];
+        return (int)$result->ownerid;
     }
+    
     function check_psw($uname,$psw)
     {
         //allow only A-Z, dot, hyphen and numbers:
-        $uname=strtolower(preg_replace("/[^a-zA-Z\.\-0-9]",'',$uname)); 
+        $uname=$this->clean_uname($uname); 
 
         $this->db->where('uname',$uname);
         $query=$this->db->get('owners');
@@ -42,5 +64,28 @@ class Owner extends CI_Model
             return true;
         
         return false;
+    }
+    
+    function select($ownerid)
+    {
+        if (!is_int($ownerid)) //we probably have a username then
+            $this->id_by_uname($ownerid);
+        
+        $ownerid=(int)$ownerid;
+        if (!$ownerid)
+            return false;
+        
+        $this->db->where('ownerid',$ownerid);
+        $query=$this->db->get('owners');
+        if ($query->num_rows()!=1)
+            return false;
+        
+        $result=$query->result()[0];
+        
+        $this->ownerid=$ownerid;
+        $this->uname=$result->uname;
+        $this->is_admin=!!$result->is_admin;
+        
+        return $ownerid;
     }
 }
