@@ -15,7 +15,8 @@ class Users extends CI_Controller
         $malls=array();
         foreach($this->user->malls as $mall)
         {
-            $this->mall->select($mall);
+            if (!$this->mall->select($mall))
+                continue;
             $malls[]=$this->mall->as_array();
         }
         $user=$this->user;
@@ -38,7 +39,8 @@ class Users extends CI_Controller
         $stores=array();
         foreach($this->user->list_stores() as $store)
         {
-            $this->store->select($store)
+            if (!$this->store->select($store))
+                continue;
             $stores[]=$this->store->as_array();
         }
         send_json($stores);
