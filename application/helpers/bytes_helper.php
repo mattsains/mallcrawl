@@ -13,6 +13,9 @@
 	function salted_hash($pass)
 	{
 		$salt=rand_hex(50);
-		$hash=sha1($salt.$pass);
-		return array('salt'=>$salt,'hash'=>$hash);
+		return array('salt'=>$salt,'hash'=>make_hash($salt,$pass));
 	}
+    function make_hash($salt,$pass)
+    {
+        return sha1($salt.$pass);
+    }
