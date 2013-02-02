@@ -1,9 +1,4 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
-    $handle=fopen("application/logs/requests/".time().".php",'w');
-    ob_start();
-    var_dump($_POST);
-    fwrite($handle,ob_get_clean());
 /*
 | -------------------------------------------------------------------
 | AUTO-LOADER
