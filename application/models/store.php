@@ -93,7 +93,7 @@ class Store extends CI_Model
         
         //auto-populate fields
         foreach ($this->fields as $field)
-            $this->$field=$result->$field?
+            $this->$field=ISSET($result->$field)?
                             $result->$field : false;
         
         // now figure out the name of the type of mall this is
@@ -161,7 +161,12 @@ class Store extends CI_Model
                                 ' ORDER BY `stores`.`name`');
         $output=$query->result_array();
         foreach($output as $key=>$store)
+        {
             $output[$key]['categories']=$this->categories($output[$key]['storeid']);
+            $optional=array('typename','email','facebook','twitter','website');
+            foreach($optional as $optfield)
+                $output[$key][$optfield]=ISSET($output[$key][$optfield])?$output[$key][$optfield]:false;
+        }
         return $output;
     }
     
