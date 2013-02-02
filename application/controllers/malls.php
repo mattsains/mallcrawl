@@ -22,7 +22,6 @@ class Malls extends CI_Controller
             $this->mall->select($mallid);
             $mall_object[]=$this->mall->as_array();
         }
-        
         send_json($mall_object);
     }
     
