@@ -1,1 +1,1 @@
-<?php header('HTTP/1.0 500 Internal Server Error');header('Content-Type: application/json');?>{"server_error":{"text":"<?php echo strip_tags($message);?>","ref":"c<?php echo time();?>","can_retry":true}}<?php die();//prevents output mixed in error messages?>
+<?php header('HTTP/1.0 500 Internal Server Error');header('Content-Type: application/json');log_message('error',$heading.':'.$message);?>{"server_error":{"text":"<?php echo strip_tags($message);?>","ref":"c<?php echo time();?>","can_retry":true}}<?php die();//prevents output mixed in error messages?>
