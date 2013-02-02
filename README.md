@@ -323,8 +323,15 @@ This function can be used to make sure you have a legitimate login. If there is 
                 "map": "http://mattsains.dyndns.org/bettermall/assets/malls/",
                 "polygons": "http://mattsains.dyndns.org/bettermall/assets/malls/"
             }
-        ],
-        "stores": [
+        ]
+    }
+
+###`/users/stores`
+*Input parameters:* `access_token`
+
+This function returns all the malls the user has starred:
+    
+        [
             {
                 "storeid": "2",
                 "mallid": "1",
@@ -338,6 +345,9 @@ This function can be used to make sure you have a legitimate login. If there is 
                 "facebook": "AckermansSA",
                 "phone": "0860900600",
                 "email": false
+            },
+            }
+                "storeid": "1"
+                (and so on
             }
         ]
-    }
