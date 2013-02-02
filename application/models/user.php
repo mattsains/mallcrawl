@@ -143,9 +143,6 @@ class User extends CI_Model
         if (!$this->userid) return false;
         if (!$this->store->exists($storeid)) return false;
         
-        if (!in_array($storeid,$this->list_stores())) // does not have the store in the list
-            return true; //swallow silently.
-        
         $this->db->delete('store-lists',array('userid'=>$this->userid, 'storeid'=>$storeid));
         return true;
     }

@@ -19,7 +19,7 @@ class Malls extends CI_Controller
         $mall_object=array();
         foreach ($this->mall->nearest($x_coord,$y_coord,10) as $mallid)
         {
-            $this->mall->select($mallid);
+            $this->mall->select($mallid);//don't check the mallid because we have just gotten it from the database
             $mall_object[]=$this->mall->as_array();
         }
         send_json($mall_object);
