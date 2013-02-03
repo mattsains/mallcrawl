@@ -358,6 +358,6 @@ $config['rewrite_short_tags'] = FALSE;
 $config['proxy_ips'] = '';
 
 $config['email']='matthew@sainsbury.za.net';
-
+$config['api-path']='/bettermall/';
 /* End of file config.php */
 /* Location: ./application/config/config.php */

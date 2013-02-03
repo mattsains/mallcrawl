@@ -4,8 +4,8 @@
         <?php if (ISSET($redir) && $redir) echo form_open(base_url().'auth/login?redir='.$redir);
               else echo form_open(base_url().'auth/login');?>
             
-            <div class="form_field"><label for="Username">Username</label><input name="username" type="text" value="<?php echo $username; ?>" /></div>
-            <div class="form_field"><label for="Password">Password</label><input name="password" type="password" value="" /></div>
+            <div class="form_field"><label for="username">Username</label><input name="username" id="username" type="text" value="<?php echo $username; ?>" /></div>
+            <div class="form_field"><label for="password">Password</label><input name="password" id="password" type="password" value="" /></div>
             <div class="form_field"><input type="submit" value="Log in"/></div>
         </form>
     </section>

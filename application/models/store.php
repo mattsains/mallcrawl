@@ -156,8 +156,9 @@ class Store extends CI_Model
         $this->load->model('mall');
         if (!$this->mall->exists($mallid)) return false;
         
-        $query=$this->db->query('SELECT `stores`.`storeid`, `stores`.`typeid`, `types`.`text` AS `typename`, `stores`.`name`, `stores`.`manager_name`, `stores`.`email`, `stores`.`bio`, `stores`.`facebook`, `stores`.`twitter`, `stores`.`website`,`stores`.`phone`'.
+        $query=$this->db->query('SELECT `stores`.`storeid`, `stores`.`ownerid`, `owners`.`uname`, `stores`.`typeid`, `types`.`text` AS `typename`, `stores`.`name`, `stores`.`manager_name`, `stores`.`email`, `stores`.`bio`, `stores`.`facebook`, `stores`.`twitter`, `stores`.`website`,`stores`.`phone`'.
                                 ' FROM `stores` LEFT JOIN `types` ON `stores`.`typeid`=`types`.`typeid`'.
+                                ' LEFT JOIN `owners` on `stores`.`ownerid`=`owners`.`ownerid`'.
                                 ' WHERE `stores`.`mallid`='.$mallid.
                                 ' ORDER BY `stores`.`name`');
         $output=$query->result_array();
