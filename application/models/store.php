@@ -103,7 +103,8 @@ class Store extends CI_Model
         
         if ($query->num_rows()==1)
         {
-            $result=$query->result()[0];
+            $result=$query->result();
+            $result=$result[0];
             $this->type_name=$result->text;
         } else $this->type_name=false;
         

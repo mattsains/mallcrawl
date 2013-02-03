@@ -1,7 +1,7 @@
 <?php
 class Owner extends CI_Model
 {
-    private $fields=array('ownerid','uname','is_admin','locked'); //auto-populable fields
+    private $fields=array('ownerid','uname','is_admin','is_locked'); //auto-populable fields
     
     public $ownerid=false;
     public $uname=false;
@@ -12,12 +12,13 @@ class Owner extends CI_Model
     {
         parent::__construct();
         $this->load->database();
+        $this->load->library('session');
     }
     
     /// Allow only A-Z, dot, hyphen and numbers
     private function clean_uname($uname)
     {
-        return strtolower(preg_replace("/[^a-zA-Z\.\-0-9]",'',$uname)); 
+        return strtolower(preg_replace("[^a-zA-Z\.\-0-9]",'',$uname)); 
     }
     
     /// Returns true if the ownerid exists
@@ -33,7 +34,7 @@ class Owner extends CI_Model
     function uname_exists($uname)
     {
         $this->db->select('ownerid');
-        $this->db->where('uname',$uname);
+        $this->db->where('uname',$this->clean_uname($uname));
         $query=$this->db->get('owners');
         return $query->num_rows()>0;
     }
@@ -46,7 +47,8 @@ class Owner extends CI_Model
         $query=$this->db->get('owners');
         if ($query->num_rows()!=1)
             return false;
-        $result=$query->result()[0];
+        $result=$query->result();
+        $result=$result[0];
         return (int)$result->ownerid;
     }
     
@@ -56,11 +58,13 @@ class Owner extends CI_Model
         $uname=$this->clean_uname($uname); 
 
         $this->db->where('uname',$uname);
+        $this->db->where('is_locked',0);
         $query=$this->db->get('owners');
         if ($query->num_rows()!=1)
             return false;
         
-        $dbpsw=$query->result()[0];
+        $dbpsw=$query->result();
+        $dbpsw=$dbpsw[0];
         $this->load->helper('bytes');
         $providedhash=make_hash($dbpsw->salt,$psw);
         if ($providedhash===$dbpsw->hash)
@@ -72,8 +76,8 @@ class Owner extends CI_Model
     function select($ownerid)
     {
         if (!is_int($ownerid)) //we probably have a username then
-            $this->id_by_uname($ownerid);
-        
+            $ownerid=$this->id_by_uname($ownerid);
+            
         $ownerid=(int)$ownerid;
         if (!$ownerid)
             return false;
@@ -83,28 +87,27 @@ class Owner extends CI_Model
         if ($query->num_rows()!=1)
             return false;
         
-        $result=$query->result()[0];
+        $result=$query->result();
+        $result=$result[0];
         
         foreach ($this->fields as $field)
             $this->$field=$result->$field?$result->$field:false;
         
         return $ownerid;
     }
+    /// Starts a session.
+    /// WARNING: no authentication done here!
+    function session_begin($uid)
+    {
+        if (!is_int($uid))
+            $uid=$this->id_by_uname($uid);
+        $this->session->set_userdata(array('ownerid'=>$uid));
+    }
     /// A nice function to call at the beginning of a script to restrict access to logged in users.
     /// If someone is logged in, that user will be select()ed
     function login($redir=true)
     {
         if ($this->session->userdata('ownerid') && $this->exists((int)$this->session->userdata('ownerid')))
-        {
-            //not logged in, or login is invalid
-            $this->session->sess_destroy();
-            if ($redir)
-            {
-                redirect(base_url().'auth/login?redir='.urlencode(current_url()));
-                die();
-            } else
-                return false;
-        } else
         {
             $ownerid=(int)$this->session->userdata('ownerid');
             //check for locked-ness
@@ -121,9 +124,18 @@ class Owner extends CI_Model
                     die();
                 } else
                     return false;
-            }
-            //otherwise we are bona-fide logged in
-            return true;
+            } else      //otherwise we are bona-fide logged in
+                return true;
+        } else
+        {
+            //not logged in, or login is invalid
+            if ($redir)
+            {
+                var_dump(base_url());
+                redirect(base_url().'auth/login?redir='.urlencode(current_url()));
+                die();
+            } else
+                return false;
         }
     }
     function logout()
