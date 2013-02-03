@@ -90,7 +90,8 @@ class Owner extends CI_Model
         
         return $ownerid;
     }
-    
+    /// A nice function to call at the beginning of a script to restrict access to logged in users.
+    /// If someone is logged in, that user will be select()ed
     function login($redir=true)
     {
         if ($this->session->userdata('ownerid') && $this->exists((int)$this->session->userdata('ownerid')))
@@ -124,5 +125,9 @@ class Owner extends CI_Model
             //otherwise we are bona-fide logged in
             return true;
         }
+    }
+    function logout()
+    {
+        $this->session->sess_destroy();
     }
 }
