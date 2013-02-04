@@ -351,3 +351,15 @@ This function returns all the malls the user has starred:
                 (and so on
             }
         ]
+
+Stats
+----
+
+MAPI can do some stats which owners might find interesting. Here's how you can make MAPI log data.
+
+For each view of a mall or store, call the following url
+
+###`/stats/[mall|store]`
+*Input parameters:* `mallid` or `storeid`
+
+This function will log the view and return the id you gave it, as confirmation.
