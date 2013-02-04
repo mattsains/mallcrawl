@@ -58,18 +58,39 @@ class Malls extends CI_Controller
     }
     /// Shows a single mall's information
     public function show($mallid)
-    {
+    {  
         $mallid=(int)$mallid;
         $this->owner->login();
         $this->load->model('mall');
+        
+        $this->load->model('owner');
+        $this->load->model('store');
+        
         if ($this->mall->select($mallid))
         {
-            $this->load->model('owner');
-            $this->load->model('store');
-            
-            $this->load->view('header',array('title'=>$this->mall->name,'map'=>array('x_coord'=>$this->mall->x_coord,'y_coord'=>$this->mall->y_coord)));
-            $this->load->view('mall-details',array('name'=>$this->mall->name, 'manager_name'=>$this->mall->manager_name, 'stores'=>$this->store->list_mall($mallid)));
-            $this->load->view('footer');
+            if ($this->input->get('edit'))
+            {
+                //an edit
+                if ($this->input->post('mallid'))
+                {
+                    //form has been submitted. validate.
+                } else
+                {
+                    //just show the form
+                    $this->load->view('header',array('title'=>'test','map'=>'edit','map'=>array('edit'=>'yes','x_coord'=>0,'y_coord'=>2)));
+                    $this->load->view('mall-details-edit');
+                    $this->load->view('footer');
+                }
+            } else
+            {
+                $this->load->view('header',array('title'=>$this->mall->name,'map'=>array('x_coord'=>$this->mall->x_coord,'y_coord'=>$this->mall->y_coord)));
+                $this->load->view('mall-details',array('name'=>$this->mall->name, 'manager_name'=>$this->mall->manager_name, 'logo'=>$this->mall->logo, 'stores'=>$this->store->list_mall($mallid), 'map'=>$this->mall->map));
+                $this->load->view('footer');
+            } 
+        } else
+        {
+            //mall does not exist
+            show_404(current_url());
         }
     }
 }

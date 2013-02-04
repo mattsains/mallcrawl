@@ -11,6 +11,7 @@
         </script>
         <script type="text/javascript">
         var map;
+        var marker;
           function map_initialize() {
             var mapOptions = {
               center: new google.maps.LatLng(<?php echo $map['x_coord'].', '.$map['y_coord'];?>),
@@ -19,10 +20,17 @@
             };
             map = new google.maps.Map(document.getElementById("map_canvas"),
                 mapOptions);
-            var marker = new google.maps.Marker({
+            marker = new google.maps.Marker({
                   position: mapOptions.center,
+                  draggable: true,
                   map: map
                 });
+            <?php if (ISSET($map['edit'])){?>
+            google.maps.event.addListener(marker, 'dragend', function() {
+              document.getElementById('x_coord').value=marker.getPosition().lat();
+              document.getElementById('y_coord').value=marker.getPosition().lng();
+            });
+            <?php } ?>
             }
 
         </script>
