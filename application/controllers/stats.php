@@ -23,4 +23,20 @@ class Stats extends CI_Controller
         
         send_json($id);
     }
+    /// Checks the health of the API
+    /// ASSUMES THERE IS AT LEAST ONE MALL
+    public function status()
+    {
+        try
+        {
+            $this->load->model('mall');
+            $mallid=$this->mall->nearest(1,1,10);
+            $mallid=$mallid[0];
+            $this->mall->select($mallid);
+            send_json('API is healthy');
+        } catch (Exception $e)
+        {
+            server_error('API is unhealthy!');
+        }
+    }
 }
