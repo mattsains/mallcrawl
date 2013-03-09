@@ -12,6 +12,7 @@ class Users extends CI_Controller
         
         $this->load->model('user');
         $this->user->initialise_from_token($this->input->post('access_token'));
+	
         $malls=array();
         foreach($this->user->malls as $mall)
         {

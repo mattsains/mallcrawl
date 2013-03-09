@@ -103,7 +103,8 @@ class Store extends CI_Model
         
         if ($query->num_rows()==1)
         {
-            $result=$query->result()[0];
+            $result=$query->result();
+            $result=$result[0];
             $this->type_name=$result->text;
         } else $this->type_name=false;
         
@@ -210,7 +211,9 @@ class Store extends CI_Model
             curl_setopt($ch, CURLOPT_POSTFIELDS, "access_token=$token&batch=$requests");
             curl_setopt($ch, CURLOPT_FAILONERROR, false);
             curl_setopt($ch, CURLOPT_HTTP200ALIASES, (array)400);
-            curl_setopt($ch, CURLOPT_CAINFO, "c:/xampp/php/ext/cacert.crt");//DEBUG ONLY
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+            curl_setopt($ch, CURLOPT_CAINFO, "/etc/apache2/ssl-cert/verisign-fb.crt");
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
             $response = json_decode(curl_exec($ch));
             curl_close($ch);

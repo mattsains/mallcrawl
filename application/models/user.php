@@ -25,7 +25,9 @@ class User extends CI_Model
         curl_setopt($ch, CURLOPT_URL, "https://graph.facebook.com/me?fields=id,name,username&access_token=$token"); 
         curl_setopt($ch, CURLOPT_FAILONERROR, false);
         curl_setopt($ch, CURLOPT_HTTP200ALIASES, (array)400);
-        curl_setopt($ch, CURLOPT_CAINFO, "c:/xampp/php/ext/cacert.crt");//DEBUG ONLY
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+        curl_setopt($ch, CURLOPT_CAINFO, "/etc/apache2/ssl-cert/verisign-fb.crt");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
         $response = json_decode(curl_exec($ch));
         curl_close($ch);  
@@ -38,7 +40,7 @@ class User extends CI_Model
             //we're still here, so try again
             return $this->initialise_from_token($token,$fail_count+1);
         }
-
+        
         $this->userid=$response->id;
         $this->name=$response->name;
         $this->uname=isset($response->username)?$response->username:$response->id; //some people don't have usernames
@@ -53,7 +55,11 @@ class User extends CI_Model
             $this->db->insert('users',array('userid'=>$this->userid));
             $this->noupload=false;
         } else //otherwise make sure he is allowed to upload images
-            $this->noupload=!!$query->result()[0]->no_upload;
+        {
+            $result=$query->result();
+            $result=$result[0];
+            $this->noupload=!!$result->no_upload;
+        }
         //favourite malls
         $this->db->select('mallid');
         $this->db->where('userid',$this->userid);
