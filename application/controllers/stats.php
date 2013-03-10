@@ -23,6 +23,17 @@ class Stats extends CI_Controller
         
         send_json($id);
     }
+    public function stars()
+    {
+        $this->load->database();
+        $query=$this->db->query('SELECT storeid, count(*) AS stars FROM `store-lists` GROUP BY storeid ORDER BY stars DESC LIMIT 0,20');
+        $output=array();
+        foreach ($query->result() as $row)
+        {
+            $output[]=array('storeid'=>$row->storeid, 'stars'=>$row->stars);
+        }
+        send_json($output);
+    }
     /// Checks the health of the API
     /// ASSUMES THERE IS AT LEAST ONE MALL
     public function status()
