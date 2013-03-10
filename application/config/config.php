@@ -360,4 +360,4 @@ $config['proxy_ips'] = '';
 /* End of file config.php */
 /* Location: ./application/config/config.php */
 
-$config['ssl-cert']='C:\xampp\php\ext\cacert.crt';
+$config['ssl-cert']='/etc/apache2/ssl-cert/verisign-fb.crt';
