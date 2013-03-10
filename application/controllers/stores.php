@@ -76,7 +76,7 @@ class Stores extends CI_Controller
     {
         if (!$this->input->post('storeid'))
             error('You did not provide a storeid');
-        if ($_FILES['image']['name']=="")
+        if (!(isset($_FILES['image']['name'])) || ($_FILES['image']['name']==""))
             error('You did not upload an image');
         if (!$this->input->post('access_token'))
             error('You did not provide an access_token');
