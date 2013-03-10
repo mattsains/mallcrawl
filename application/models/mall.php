@@ -97,7 +97,7 @@ class Mall extends CI_Model
         //auto-populate fields
         foreach ($this->fields as $field)
         {
-            $this->$field=$result->$field?
+            $this->$field=(isset($result->$field) && $result->$field!="")?
                             $result->$field : false;
         }
         
