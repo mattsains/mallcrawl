@@ -155,12 +155,13 @@ class Store extends CI_Model
     /// This is a STATELESS function, it works alone.
     function list_mall($mallid)
     {
+        //this needs to change
         $mallid=(int)$mallid;
         
         $this->load->model('mall');
         if (!$this->mall->exists($mallid)) return false;
         
-        $query=$this->db->query('SELECT `stores`.`storeid`, `stores`.`typeid`, `types`.`text` AS `typename`, `stores`.`name`, `stores`.`manager_name`, `stores`.`email`, `stores`.`bio`, `stores`.`facebook`, `stores`.`twitter`, `stores`.`website`,`stores`.`phone`'.
+        $query=$this->db->query('SELECT `stores`.`storeid`, `stores`.`typeid`, `types`.`text` AS `typename`, `stores`.`name`, `stores`.`logo`, `stores`.`manager_name`, `stores`.`email`, `stores`.`bio`, `stores`.`facebook`, `stores`.`twitter`, `stores`.`website`,`stores`.`phone`'.
                                 ' FROM `stores` LEFT JOIN `types` ON `stores`.`typeid`=`types`.`typeid`'.
                                 ' WHERE `stores`.`mallid`='.$mallid.
                                 ' ORDER BY `stores`.`name`');
@@ -168,9 +169,11 @@ class Store extends CI_Model
         foreach($output as $key=>$store)
         {
             $output[$key]['categories']=$this->categories($output[$key]['storeid']);
-            $optional=array('typename','email','facebook','twitter','website');
+            $optional=array('typename','email','facebook','twitter','website','logo');
             foreach($optional as $optfield)
                 $output[$key][$optfield]=ISSET($output[$key][$optfield])?$output[$key][$optfield]:false;
+            if ($output[$key]['logo'])
+                $output[$key]['logo']=base_url().'assets/stores/'.$output[$key]['logo'];
         }
         return $output;
     }
