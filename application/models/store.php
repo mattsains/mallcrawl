@@ -2,7 +2,7 @@
 class Store extends CI_Model
 {
     // fields which can be automatically populated
-    private $fields=array('storeid','mallid','typeid','ownerid','manager_name','name','email','bio','facebook','twitter','website','phone');
+    private $fields=array('storeid','mallid','typeid','ownerid','manager_name','name','logo','email','bio','facebook','twitter','website','phone');
     
     public $storeid=false;
     public $mallid=false;
@@ -10,6 +10,7 @@ class Store extends CI_Model
     public $ownerid=false;
     public $manager_name=false;
     public $name=false;
+    public $logo=false;
     public $email=false;
     public $bio=false;
     public $facebook=false;
@@ -93,8 +94,11 @@ class Store extends CI_Model
         
         //auto-populate fields
         foreach ($this->fields as $field)
-            $this->$field=ISSET($result->$field)?
+            $this->$field=(ISSET($result->$field) && $result->$field!="")?
                             $result->$field : false;
+        //turn the logo into an actual URL
+        if ($this->logo)
+            $this->logo=base_url().'assets/stores/'.$this->logo;
         
         // now figure out the name of the type of mall this is
         $typeid=(int)$this->typeid;
@@ -117,7 +121,7 @@ class Store extends CI_Model
         if (!$this->mallid)
             return false;
         
-        $return_fields=array('storeid','mallid','typeid','type_name','name','manager_name','bio','website','twitter','facebook','phone','email');
+        $return_fields=array('storeid','mallid','typeid','type_name','name','logo','manager_name','bio','website','twitter','facebook','phone','email');
         
         $output=array();
         
