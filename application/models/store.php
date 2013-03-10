@@ -213,7 +213,7 @@ class Store extends CI_Model
             curl_setopt($ch, CURLOPT_HTTP200ALIASES, (array)400);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-            curl_setopt($ch, CURLOPT_CAINFO, "/etc/apache2/ssl-cert/verisign-fb.crt");
+            curl_setopt($ch, CURLOPT_CAINFO, $this->config->item('ssl-cert'));
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
             $response = json_decode(curl_exec($ch));
             curl_close($ch);
