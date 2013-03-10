@@ -34,7 +34,7 @@ class Mall extends CI_Model
         $y_coord=(double)$y_coord;
         $limit=(int)$limit;
         
-        $query=$this->db->query("SELECT `mallid` FROM `malls` ORDER BY SQRT(POWER(`x_coord`-$x_coord,2)+POWER(`y_coord`-$y_coord,2))");
+        $query=$this->db->query("SELECT `mallid` FROM `malls` ORDER BY (POWER(`x_coord`-$x_coord,2)+POWER(`y_coord`-$y_coord,2))");
         
         $malls=array();
         foreach($query->result() as $row)
