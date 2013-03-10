@@ -367,3 +367,23 @@ For each view of a mall or store, call the following url
 *Input parameters:* `mallid` or `storeid`
 
 This function will log the view and return the id you gave it, as confirmation.
+
+###`/stats/stars`
+*Input parameters:* `storeid` (optional)
+
+If you give this function a storeid, it will return the number of times the store has been starred.
+
+Otherwise, the function will return a leaderboard in the following format:
+    
+    [
+        {
+            "storeid": "3",
+            "stars": "2"
+        },
+        {
+            "storeid": "2",
+            "stars": "1"
+        }
+    ]
+
+This will return the top twenty stores.
