@@ -118,7 +118,7 @@ class Mall extends CI_Model
         if (!$this->mallid)
             return false;
         
-        $return_fields=array('mallid','name','x_coord','y_coord','manager_name','bio','website','twitter','facebook','phone','email','logo','map','polygons');
+        $return_fields=array('mallid','name','secret','x_coord','y_coord','manager_name','bio','website','twitter','facebook','phone','email','logo','map','polygons');
         
         $output=array();
         

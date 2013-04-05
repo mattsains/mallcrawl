@@ -68,23 +68,51 @@ class Malls extends CI_Controller
         
         if ($this->mall->select($mallid))
         {
+            //make sure user is allowed to see this
+            if ($this->mall->ownerid!=$this->owner->ownerid && (!$this->owner->is_admin))
+                show_404(current_url());
+            
             if ($this->input->get('edit'))
             {
                 //an edit
+                $this->load->library('form_validation');
                 if ($this->input->post('mallid'))
                 {
-                    //form has been submitted. validate.
+                    $this->form_validation->set_rules('name','Name','required|trim|max_length[50]|callback_html_special');
+                    $this->form_validation->set_rules('manager','Manager Name','required|trim|max_length[50]|callback_html_special');
+                    $this->form_validation->set_rules('website','Website','trim|max_length[60]|callback_html_special');
+                    $this->form_validation->set_rules('twitter','Twitter','trim|max_length[60]|callback_html_special');
+                    $this->form_validation->set_rules('facebook','Facebook','trim|max_length[60]|callback_html_special');
+                    $this->form_validation->set_rules('phone','Phone','callback_make_phone|required|max_length[11]');
+                    $this->form_validation->set_rules('email','Email','valid_email|max_length[60]');
+                    $this->form_validation->set_rules('bio','Bio','trim|callback_html_special');
+                    
+                    $this->form_validation->set_rules('x_coord','required|numeric');
+                    $this->form_validation->set_rules('y_coord','required|numeric');
+
+                    if (!$this->form_validation->run())
+                    {
+                        //validation failed
+                        $this->load->view('header',array('title'=>$this->mall->name,'map'=>'edit','map'=>array('edit'=>'yes','x_coord'=>$this->input->post('x_coord'),'y_coord'=>$this->input->post('y_coord'))));
+                        $this->load->view('mall-details-edit', $this->mall->as_array());
+                        $this->load->view('footer');
+                    } else
+                    {
+                        //update database
+                    }
                 } else
                 {
                     //just show the form
-                    $this->load->view('header',array('title'=>'test','map'=>'edit','map'=>array('edit'=>'yes','x_coord'=>0,'y_coord'=>2)));
-                    $this->load->view('mall-details-edit');
+                    $this->load->view('header',array('title'=>$this->mall->name,'map'=>'edit','map'=>array('edit'=>'yes','x_coord'=>$this->mall->x_coord,'y_coord'=>$this->mall->y_coord)));
+                    $this->load->view('mall-details-edit', $this->mall->as_array());
                     $this->load->view('footer');
                 }
             } else
             {
+                $mall=$this->mall->as_array();
+                $mall['stores']=$this->store->list_mall($mallid);
                 $this->load->view('header',array('title'=>$this->mall->name,'map'=>array('x_coord'=>$this->mall->x_coord,'y_coord'=>$this->mall->y_coord)));
-                $this->load->view('mall-details',array('name'=>$this->mall->name, 'manager_name'=>$this->mall->manager_name, 'logo'=>$this->mall->logo, 'stores'=>$this->store->list_mall($mallid), 'map'=>$this->mall->map));
+                $this->load->view('mall-details',$mall);
                 $this->load->view('footer');
             } 
         } else
@@ -92,5 +120,13 @@ class Malls extends CI_Controller
             //mall does not exist
             show_404(current_url());
         }
+    }
+    public function html_special($str)
+    {
+        return htmlspecialchars($str,ENT_QUOTES);
+    }
+    public function make_phone($str)
+    {
+        return preg_replace("/[^0-9]/","",$str);//strips all but numbers
     }
 }

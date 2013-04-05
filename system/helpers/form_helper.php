@@ -676,6 +676,7 @@ if ( ! function_exists('set_value'))
 	{
 		if (FALSE === ($OBJ =& _get_validation_object()))
 		{
+            echo "validation false";
 			if ( ! isset($_POST[$field]))
 			{
 				return $default;
