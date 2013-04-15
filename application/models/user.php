@@ -54,6 +54,8 @@ class User extends CI_Model
             //the user does not exist in the database. Let's make him an entry
             $this->db->insert('users',array('userid'=>$this->userid));
             $this->noupload=false;
+            //promotion: adding moffet to everyone's profile
+            add_mall(4);
         } else //otherwise make sure he is allowed to upload images
         {
             $result=$query->result();
