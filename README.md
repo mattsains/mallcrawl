@@ -387,3 +387,5 @@ Otherwise, the function will return a leaderboard in the following format:
     ]
 
 This will return the top twenty stores.
+
+###`/stats/viewcount/[mall|store]`
