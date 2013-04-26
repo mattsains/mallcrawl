@@ -188,7 +188,8 @@ class Store extends CI_Model
             error('The access token is invalid');
         
         $this->storeid=(int)$this->storeid;
-        $query=$this->db->query('SELECT `store-images`.`image`, `store-images`.`thumb`, `store-images`.`userid`, UNIX_TIMESTAMP(`store-images`.`timestamp`) AS `timestamp` FROM `store-images` ORDER BY `store-images`.`timestamp` DESC');
+
+        $query=$this->db->query('SELECT `store-images`.`image`, `store-images`.`thumb`, `store-images`.`userid`, UNIX_TIMESTAMP(`store-images`.`timestamp`) AS `timestamp` FROM `store-images` WHERE `storeid`='.$this->storeid.' ORDER BY `store-images`.`timestamp` DESC');
         
         $output=array();
         $userids=array();
