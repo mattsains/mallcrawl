@@ -92,8 +92,7 @@ class Stats extends CI_Controller
                 $storequery=$this->db->query('SELECT count(*) as count from `store-lists` where `storeid`='.$row->storeid);
                 $result=$storequery->result();
                 $result=$result[0];
-                $storeid=(int)$row->storeid;
-                $output[$storeid]=(int)$result->count;
+                $output[]=array('storeid'=>(int)$row->storeid, 'stars'=>(int)$result->count);
             }
             send_json($output);
         }
