@@ -1,91 +1,162 @@
-Mall Crawl API technical guide
-=========
+<h1>
+<a name="mall-crawl-api-technical-guide" class="anchor" href="#mall-crawl-api-technical-guide"><span class="mini-icon mini-icon-link"></span></a>Mall Crawl API technical guide</h1>
 
-The Mall Crawl API (MAPI) returns information in the JSON format. This document is a technical specification of the exact nature of this API.
+<p>The Mall Crawl API (MAPI) returns information in the JSON format. This document is a technical specification of the exact nature of this API.</p>
 
-Errors
-------
-There are two types of errors in MAPI - general errors and server errors:
+<h2>
+<a name="errors" class="anchor" href="#errors"><span class="mini-icon mini-icon-link"></span></a>Errors</h2>
 
-###General errors
-A general error is usually the client's fault. For example, providing invalid input, or trying to access an API function that does not exist, is a general error.
+<p>There are two types of errors in MAPI - general errors and server errors:</p>
 
-A general error looks like this:
+<h3>
+<a name="general-errors" class="anchor" href="#general-errors"><span class="mini-icon mini-icon-link"></span></a>General errors</h3>
 
-    {
-        "error": {
-            "text": "The page you requested was not found.",
-            "ref": "ref00125"
-        }
+<p>A general error is usually the client's fault. For example, providing invalid input, or trying to access an API function that does not exist, is a general error.</p>
+
+<p>A general error looks like this:</p>
+
+<pre><code>{
+    "error": {
+        "text": "The page you requested was not found.",
+        "ref": "ref00125"
     }
+}
+</code></pre>
 
-A general error will usually return with an HTTP error code of 400, except in the case of an unknown API function request, (as in the response above) where the code will be 404.
+<p>A general error will usually return with an HTTP error code of 400, except in the case of an unknown API function request, (as in the response above) where the code will be 404.</p>
 
-The `ref` attribute of the `error` object identifies an error. This code can be used to find more information in the server logs. It is safe to show to an end user.
+<p>The <code>ref</code> attribute of the <code>error</code> object identifies an error. This code can be used to find more information in the server logs. It is safe to show to an end user.</p>
 
-It is not recommended blindly to show the text attribute to the user, because it is aimed at the client's developer and not the user.
+<p>It is not recommended blindly to show the text attribute to the user, because it is aimed at the client's developer and not the user.</p>
 
-###Server errors
-A server error is more serious. It is usually my fault. For example, a server error could be failure to connect to the database.
+<h3>
+<a name="server-errors" class="anchor" href="#server-errors"><span class="mini-icon mini-icon-link"></span></a>Server errors</h3>
 
-A server error looks like this:
+<p>A server error is more serious. It is usually my fault. For example, a server error could be failure to connect to the database.</p>
 
-    {
-        "server_error": {
-            "text": "A Database Error Occurred",
-            "ref": "c1359035094",
-            "can_retry": true
-        }
+<p>A server error looks like this:</p>
+
+<pre><code>{
+    "server_error": {
+        "text": "A Database Error Occurred",
+        "ref": "c1359035094",
+        "can_retry": true
     }
+}
+</code></pre>
 
-A server error will return with an HTTP error code of 500. Notice that the object is called `server_error` and not just `error`
+<p>A server error will return with an HTTP error code of 500. Notice that the object is called <code>server_error</code> and not just <code>error</code></p>
 
-The `ref` attribute of the `server_error` object identifies an error. This code can be used to find more information in the server logs. It is safe to show to an end user.
+<p>The <code>ref</code> attribute of the <code>server_error</code> object identifies an error. This code can be used to find more information in the server logs. It is safe to show to an end user.</p>
 
-It is not recommended blindly to show the text attribute to the user, because it is aimed at the client's developer and not the user.
+<p>It is not recommended blindly to show the text attribute to the user, because it is aimed at the client's developer and not the user.</p>
 
-The `can_retry` attribute is a wild guess telling the client whether it should try to send the request again, or whether such behaviour is futile.
+<p>The <code>can_retry</code> attribute is a wild guess telling the client whether it should try to send the request again, or whether such behaviour is futile.</p>
 
-Users
------
-MAPI identifies users by a Facebook access token given to it by the client. This access token does not need to have anything but the default permissions (unless specified by a function) and is, in general, used for authentication only.
+<h2>
+<a name="users" class="anchor" href="#users"><span class="mini-icon mini-icon-link"></span></a>Users</h2>
 
-There is no registration required for a Facebook user to use the API for the first time. This is done automatically. Also, not all functions even _require_ an access token. See individual documentation for what is required.
+<p>MAPI identifies users by a Facebook access token given to it by the client. This access token does not need to have anything but the default permissions (unless specified by a function) and is, in general, used for authentication only.</p>
 
-The rest of this guide gives URLs relative to the root of the API, for example, on my testing server, `http://mattsains.dyndns.org/bettermall/malls` is simply `/malls`
+<p>There is no registration required for a Facebook user to use the API for the first time. This is done automatically. Also, not all functions even <em>require</em> an access token. See individual documentation for what is required.</p>
 
-The API
-=======
-The Mall Crawl API uses POST exclusively. 
+<p>The rest of this guide gives URLs relative to the root of the API, for example, on my testing server, <code>http://mattsains.dyndns.org/bettermall/malls</code> is simply <code>/malls</code></p>
 
-Malls
------
+<h1>
+<a name="the-api" class="anchor" href="#the-api"><span class="mini-icon mini-icon-link"></span></a>The API</h1>
 
-###`/malls`
-*Input parameters:* `mallid`
+<p>The Mall Crawl API uses POST exclusively. </p>
 
-Returns information about a mall:
-* `mallid` - a unique integer
-* `name` - the name of the mall, eg., "Walmer Park"
-* `x_coord` This along with `y_coord` are decimal coordinates, eg., -35.24521 
-* `y_coord`
-* `manager_name` - the name of the manager of the mall
-* `bio` - a shortish description of the mall
-* `website` - the mall's website URL\*
-* `twitter` - the mall's Twitter handle\*
-* `facebook` - the mall's Facebook handle\*
-* `phone` - the mall's phone number, as an unformatted string
-* `email` - the mall's email address\*
-* `logo` - a URL to an image logo of the mall
-* `map` - a URL to an image map of the mall\*
-* `polygon` - a URL to a file describing the stores on the map. Probably XML, but that's up to you!\*
+<h2>
+<a name="malls" class="anchor" href="#malls"><span class="mini-icon mini-icon-link"></span></a>Malls</h2>
 
-\* these parameters are optional. If they are not available, they will be set as false.
+<h3>
+<a name="malls-1" class="anchor" href="#malls-1"><span class="mini-icon mini-icon-link"></span></a><code>/malls</code>
+</h3>
 
-Here is an example:
+<p><em>Input parameters:</em> <code>mallid</code></p>
 
+<p>Returns information about a mall:</p>
+
+<ul>
+<li>
+<code>mallid</code> - a unique integer</li>
+<li>
+<code>name</code> - the name of the mall, eg., "Walmer Park"</li>
+<li>
+<code>x_coord</code> This along with <code>y_coord</code> are decimal coordinates, eg., -35.24521 </li>
+<li><code>y_coord</code></li>
+<li>
+<code>manager_name</code> - the name of the manager of the mall</li>
+<li>
+<code>bio</code> - a shortish description of the mall</li>
+<li>
+<code>website</code> - the mall's website URL*</li>
+<li>
+<code>twitter</code> - the mall's Twitter handle*</li>
+<li>
+<code>facebook</code> - the mall's Facebook handle*</li>
+<li>
+<code>phone</code> - the mall's phone number, as an unformatted string</li>
+<li>
+<code>email</code> - the mall's email address*</li>
+<li>
+<code>logo</code> - a URL to an image logo of the mall</li>
+<li>
+<code>map</code> - a URL to an image map of the mall*</li>
+<li>
+<code>polygon</code> - a URL to a file describing the stores on the map. Probably XML, but that's up to you!*</li>
+</ul><p>* these parameters are optional. If they are not available, they will be set as false.</p>
+
+<p>Here is an example:</p>
+
+<pre><code>{
+    "mallid": 1,
+    "name": "Walmer Park",
+    "x_coord": "-33.980316",
+    "y_coord": "25.557826",
+    "manager_name": "Me",
+    "bio": "So and so",
+    "website": false,
+    "twitter": false,
+    "facebook": false,
+    "phone": "08124512",
+    "email": false,
+    "logo": "http://mattsains.dyndns.org/bettermall/assets/malls/x.jpg",
+    "map": "http://mattsains.dyndns.org/bettermall/assets/malls/",
+    "polygons": "http://mattsains.dyndns.org/bettermall/assets/malls/"
+}
+</code></pre>
+
+<h3>
+<a name="mallsnear" class="anchor" href="#mallsnear"><span class="mini-icon mini-icon-link"></span></a><code>/malls/near</code>
+</h3>
+
+<p><em>Input parameters:</em> <code>x_coord</code>, <code>y_coord</code></p>
+
+<p>Returns an array of the ten closest malls and their info (as above) sorted by closeness. The input coordinates must be in decimal form (-35.12514, 12.12512) and <em>not</em> the old format (35°15'21", 12°10'33")</p>
+
+<p>Here is an example:</p>
+
+<pre><code>[
     {
-        "mallid": 1,
+        "mallid": "2",
+        "name": "Greenacres",
+        "x_coord": "-33.949198",
+        "y_coord": "25.576901",
+        "manager_name": "h",
+        "bio": "h",
+        "website": false,
+        "twitter": false,
+        "facebook": false,
+        "phone": "1",
+        "email": false,
+        "logo": "http://mattsains.dyndns.org/bettermall/assets/malls/h.png",
+        "map": "http://mattsains.dyndns.org/bettermall/assets/malls/",
+        "polygons": "http://mattsains.dyndns.org/bettermall/assets/malls/"
+    },
+    {
+        "mallid": "1",
         "name": "Walmer Park",
         "x_coord": "-33.980316",
         "y_coord": "25.557826",
@@ -100,31 +171,191 @@ Here is an example:
         "map": "http://mattsains.dyndns.org/bettermall/assets/malls/",
         "polygons": "http://mattsains.dyndns.org/bettermall/assets/malls/"
     }
+]
+</code></pre>
 
-###`/malls/near`
-*Input parameters:* `x_coord`, `y_coord`
+<h3>
+<a name="mallsstores" class="anchor" href="#mallsstores"><span class="mini-icon mini-icon-link"></span></a><code>/malls/stores</code>
+</h3>
 
-Returns an array of the ten closest malls and their info (as above) sorted by closeness. The input coordinates must be in decimal form (-35.12514, 12.12512) and *not* the old format (35°15'21", 12°10'33")
+<p><em>Input parameters:</em> <code>mallid</code></p>
 
-Here is an example:
+<p>Returns an array with the stores in the mall, like this:</p>
 
-    [
+<pre><code>{
+    "mallid": 1,
+    "stores": [
         {
-            "mallid": "2",
-            "name": "Greenacres",
-            "x_coord": "-33.949198",
-            "y_coord": "25.576901",
-            "manager_name": "h",
-            "bio": "h",
-            "website": false,
-            "twitter": false,
-            "facebook": false,
-            "phone": "1",
-            "email": false,
-            "logo": "http://mattsains.dyndns.org/bettermall/assets/malls/h.png",
-            "map": "http://mattsains.dyndns.org/bettermall/assets/malls/",
-            "polygons": "http://mattsains.dyndns.org/bettermall/assets/malls/"
+            "storeid": "2",
+            "typeid": "1",
+            "typename": "Fashion &amp; Accessories",
+            "name": "Ackermans",
+            "logo": "http://mattsains.dyndns.org/bettermall/assets/stores/1/logo.png",
+            "manager_name": "Someone",
+            "email": null,
+            "bio": "it's a store, mkay",
+            "facebook": "AckermansSA",
+            "twitter": "Ackermans_SA",
+            "website": "http://www.ackermans.co.za/",
+            "phone": "0860900600",
+            "categories": [
+                {
+                    "categoryid": "1",
+                    "categoryname": "Fashion &amp; Accessories"
+                },
+                {
+                    "categoryid": "2",
+                    "categoryname": "Some other category"
+                }
+            ]
         },
+        {
+            "storeid": "3",
+            "typeid": "1",
+            "typename": "Fashion &amp; Accessories",
+            "name": "Affinity Collection",
+            "logo": false,
+            "manager_name": "Who knows",
+            "email": null,
+            "bio": "I've never seen these people",
+            "facebook": "Affinity-Collections",
+            "twitter": null,
+            "website": null,
+            "phone": "04141414",
+            "categories": []
+        }
+    ]
+}
+</code></pre>
+
+<p>The fields of stores are roughly the same as malls. You can figure it out.</p>
+
+<h3>
+<a name="mallsadd" class="anchor" href="#mallsadd"><span class="mini-icon mini-icon-link"></span></a><code>/malls/add</code>
+</h3>
+
+<p><em>Input parameters:</em> <code>mallid</code>,<code>access_token</code></p>
+
+<p>Adds the mall to the user's favourites(?) list. Returns the mallid just for acknowledgement</p>
+
+<h3>
+<a name="mallsremove" class="anchor" href="#mallsremove"><span class="mini-icon mini-icon-link"></span></a><code>/malls/remove</code>
+</h3>
+
+<p><em>Input parameters:</em> <code>mallid</code>,<code>access_token</code></p>
+
+<p>Removes the mall from the user's favourites(?) list. Returns the mallid just for acknowledgement</p>
+
+<h2>
+<a name="stores" class="anchor" href="#stores"><span class="mini-icon mini-icon-link"></span></a>Stores</h2>
+
+<h3>
+<a name="stores-1" class="anchor" href="#stores-1"><span class="mini-icon mini-icon-link"></span></a><code>/stores/</code>
+</h3>
+
+<p><em>Input parameters:</em> <code>storeid</code></p>
+
+<p>Returns information about a store. Here's an example:</p>
+
+<pre><code>{
+    "storeid": "2",
+    "mallid": "1",
+    "typeid": "1",
+    "type_name": "Fashion &amp; Accessories",
+    "name": "Ackermans",
+    "logo": "http://mattsains.dyndns.org/bettermall/assets/stores/1/logo.png",
+    "manager_name": "Someone",
+    "bio": "it's a store, mkay",
+    "website": "http://www.ackermans.co.za/",
+    "twitter": "Ackermans_SA",
+    "facebook": "AckermansSA",
+    "phone": "0860900600",
+    "email": false,
+    "categories": [
+        {
+            "categoryid": "1",
+            "categoryname": "Fashion &amp; Accessories"
+        }
+    ]
+}
+</code></pre>
+
+<h3>
+<a name="storesadd" class="anchor" href="#storesadd"><span class="mini-icon mini-icon-link"></span></a><code>/stores/add</code>
+</h3>
+
+<p><em>Input parameters:</em> <code>storeid</code>, <code>access_token</code></p>
+
+<p>Adds a store to the user's star(?) list. Returns the storeid as confirmation</p>
+
+<h3>
+<a name="storesremove" class="anchor" href="#storesremove"><span class="mini-icon mini-icon-link"></span></a><code>/stores/remove</code>
+</h3>
+
+<p><em>Input parameters:</em> <code>storeid</code>, <code>access_token</code></p>
+
+<p>Removes a store from the user's star(?) list. Returns the storeid as confirmation</p>
+
+<h3>
+<a name="storesimages" class="anchor" href="#storesimages"><span class="mini-icon mini-icon-link"></span></a><code>/stores/images/</code>
+</h3>
+
+<p><em>Input parameters:</em> <code>storeid</code>,<code>access_token</code></p>
+
+<p>Returns an array of images attached to the store. Notice that an access_token IS required (because the API queries facebook for the details of the authors of these images)</p>
+
+<p>Here's an example:</p>
+
+<pre><code>[
+    {
+        "image": "http://mattsains.dyndns.org/bettermall/assets/stores/gf",
+        "thumb": "http://mattsains.dyndns.org/bettermall/assets/stores/",
+        "timestamp": "1358963072",
+        "userid": "1",
+        "username": false,
+        "name": false
+    },
+    {
+        "image": "http://mattsains.dyndns.org/bettermall/assets/stores/t",
+        "thumb": "http://mattsains.dyndns.org/bettermall/assets/stores/",
+        "timestamp": "1358861219",
+        "userid": "603356577",
+        "username": "matt.sainsbury.31",
+        "name": "Matt Sainsbury"
+    }
+]
+</code></pre>
+
+<p>Notice how the first image has the username and name set to false. When the server does not have the username or name, your client must be able to handle this, by not displaying this information.</p>
+
+<h3>
+<a name="storesimagesadd" class="anchor" href="#storesimagesadd"><span class="mini-icon mini-icon-link"></span></a><code>/stores/images/add</code>
+</h3>
+
+<p><em>Input parameters:</em> <code>access_token</code>,<code>image</code>,<code>storeid</code> where <code>image</code> is a image uploaded HTTP form style</p>
+
+<p>This function accepts an image upload, and associates it with the current user, and the storeid given. This function will return a string URL to the uploaded image in JSON.</p>
+
+<p>Caution: File names are not preserved, so do not assume that the file name will be the same once uploaded.</p>
+
+<h2>
+<a name="users-1" class="anchor" href="#users-1"><span class="mini-icon mini-icon-link"></span></a>Users</h2>
+
+<h3>
+<a name="userslogin" class="anchor" href="#userslogin"><span class="mini-icon mini-icon-link"></span></a><code>/users/login</code>
+</h3>
+
+<p><em>Input parameters:</em> <code>access_token</code></p>
+
+<p>This function can be used to make sure you have a legitimate login. If there is a problem, an <code>error</code> will be returned. If everything is dandy, some useful information about this user is returned:</p>
+
+<pre><code>{
+    "userid": "1467084245",
+    "name": "Matthew Sainsbury",
+    "uname": "mattsains",
+    "photo": "https://graph.facebook.com/mattsains/picture",
+    "noupload": false,
+    "malls": [
         {
             "mallid": "1",
             "name": "Walmer Park",
@@ -140,252 +371,97 @@ Here is an example:
             "logo": "http://mattsains.dyndns.org/bettermall/assets/malls/x.jpg",
             "map": "http://mattsains.dyndns.org/bettermall/assets/malls/",
             "polygons": "http://mattsains.dyndns.org/bettermall/assets/malls/"
-        }
-    ]
-    
-###`/malls/stores`
-*Input parameters:* `mallid`
-
-Returns an array with the stores in the mall, like this:
-    
-    {
-        "mallid": 1,
-        "stores": [
-            {
-                "storeid": "2",
-                "typeid": "1",
-                "typename": "Fashion & Accessories",
-                "name": "Ackermans",
-                "logo": "http://mattsains.dyndns.org/bettermall/assets/stores/1/logo.png",
-                "manager_name": "Someone",
-                "email": null,
-                "bio": "it's a store, mkay",
-                "facebook": "AckermansSA",
-                "twitter": "Ackermans_SA",
-                "website": "http://www.ackermans.co.za/",
-                "phone": "0860900600",
-                "categories": [
-                    {
-                        "categoryid": "1",
-                        "categoryname": "Fashion & Accessories"
-                    },
-                    {
-                        "categoryid": "2",
-                        "categoryname": "Some other category"
-                    }
-                ]
-            },
-            {
-                "storeid": "3",
-                "typeid": "1",
-                "typename": "Fashion & Accessories",
-                "name": "Affinity Collection",
-                "logo": false,
-                "manager_name": "Who knows",
-                "email": null,
-                "bio": "I've never seen these people",
-                "facebook": "Affinity-Collections",
-                "twitter": null,
-                "website": null,
-                "phone": "04141414",
-                "categories": []
-            }
-        ]
-    }
-
-The fields of stores are roughly the same as malls. You can figure it out.
-
-###`/malls/add`
-*Input parameters:* `mallid`,`access_token`
-
-Adds the mall to the user's favourites(?) list. Returns the mallid just for acknowledgement
-
-###`/malls/remove`
-*Input parameters:* `mallid`,`access_token`
-
-Removes the mall from the user's favourites(?) list. Returns the mallid just for acknowledgement
-
-Stores
-------
-
-###`/stores/`
-*Input parameters:* `storeid`
-
-Returns information about a store. Here's an example:
-
-    {
-        "storeid": "2",
-        "mallid": "1",
-        "typeid": "1",
-        "type_name": "Fashion & Accessories",
-        "name": "Ackermans",
-        "logo": "http://mattsains.dyndns.org/bettermall/assets/stores/1/logo.png",
-        "manager_name": "Someone",
-        "bio": "it's a store, mkay",
-        "website": "http://www.ackermans.co.za/",
-        "twitter": "Ackermans_SA",
-        "facebook": "AckermansSA",
-        "phone": "0860900600",
-        "email": false,
-        "categories": [
-            {
-                "categoryid": "1",
-                "categoryname": "Fashion & Accessories"
-            }
-        ]
-    }
-
-###`/stores/add`
-*Input parameters:* `storeid`, `access_token`
-
-Adds a store to the user's star(?) list. Returns the storeid as confirmation
-
-###`/stores/remove`
-*Input parameters:* `storeid`, `access_token`
-
-Removes a store from the user's star(?) list. Returns the storeid as confirmation
-
-###`/stores/images/`
-*Input parameters:* `storeid`,`access_token`
-
-Returns an array of images attached to the store. Notice that an access_token IS required (because the API queries facebook for the details of the authors of these images)
-
-Here's an example:
-
-    [
-        {
-            "image": "http://mattsains.dyndns.org/bettermall/assets/stores/gf",
-            "thumb": "http://mattsains.dyndns.org/bettermall/assets/stores/",
-            "timestamp": "1358963072",
-            "userid": "1",
-            "username": false,
-            "name": false
         },
         {
-            "image": "http://mattsains.dyndns.org/bettermall/assets/stores/t",
-            "thumb": "http://mattsains.dyndns.org/bettermall/assets/stores/",
-            "timestamp": "1358861219",
-            "userid": "603356577",
-            "username": "matt.sainsbury.31",
-            "name": "Matt Sainsbury"
+            "mallid": "2",
+            "name": "Greenacres",
+            "x_coord": "-33.949198",
+            "y_coord": "25.576901",
+            "manager_name": "h",
+            "bio": "h",
+            "website": false,
+            "twitter": false,
+            "facebook": false,
+            "phone": "1",
+            "email": false,
+            "logo": "http://mattsains.dyndns.org/bettermall/assets/malls/h.png",
+            "map": "http://mattsains.dyndns.org/bettermall/assets/malls/",
+            "polygons": "http://mattsains.dyndns.org/bettermall/assets/malls/"
         }
     ]
-    
-Notice how the first image has the username and name set to false. When the server does not have the username or name, your client must be able to handle this, by not displaying this information.
+}
+</code></pre>
 
-###`/stores/images/add`
-*Input parameters:* `access_token`,`image`,`storeid` where `image` is a image uploaded HTTP form style
+<h3>
+<a name="usersstores" class="anchor" href="#usersstores"><span class="mini-icon mini-icon-link"></span></a><code>/users/stores</code>
+</h3>
 
-This function accepts an image upload, and associates it with the current user, and the storeid given. This function will return a string URL to the uploaded image in JSON.
+<p><em>Input parameters:</em> <code>access_token</code></p>
 
-Caution: File names are not preserved, so do not assume that the file name will be the same once uploaded.
+<p>This function returns all the malls the user has starred:</p>
 
-Users
------
-###`/users/login`
-*Input parameters:* `access_token`
-
-This function can be used to make sure you have a legitimate login. If there is a problem, an `error` will be returned. If everything is dandy, some useful information about this user is returned:
-
-    {
-        "userid": "1467084245",
-        "name": "Matthew Sainsbury",
-        "uname": "mattsains",
-        "photo": "https://graph.facebook.com/mattsains/picture",
-        "noupload": false,
-        "malls": [
-            {
-                "mallid": "1",
-                "name": "Walmer Park",
-                "x_coord": "-33.980316",
-                "y_coord": "25.557826",
-                "manager_name": "Me",
-                "bio": "So and so",
-                "website": false,
-                "twitter": false,
-                "facebook": false,
-                "phone": "08124512",
-                "email": false,
-                "logo": "http://mattsains.dyndns.org/bettermall/assets/malls/x.jpg",
-                "map": "http://mattsains.dyndns.org/bettermall/assets/malls/",
-                "polygons": "http://mattsains.dyndns.org/bettermall/assets/malls/"
-            },
-            {
-                "mallid": "2",
-                "name": "Greenacres",
-                "x_coord": "-33.949198",
-                "y_coord": "25.576901",
-                "manager_name": "h",
-                "bio": "h",
-                "website": false,
-                "twitter": false,
-                "facebook": false,
-                "phone": "1",
-                "email": false,
-                "logo": "http://mattsains.dyndns.org/bettermall/assets/malls/h.png",
-                "map": "http://mattsains.dyndns.org/bettermall/assets/malls/",
-                "polygons": "http://mattsains.dyndns.org/bettermall/assets/malls/"
-            }
-        ]
-    }
-
-###`/users/stores`
-*Input parameters:* `access_token`
-
-This function returns all the malls the user has starred:
-    
-        [
-            {
-                "storeid": "2",
-                "mallid": "1",
-                "typeid": "1",
-                "type_name": "Fashion & Accessories",
-                "name": "Ackermans",
-                "logo": "http://mattsains.dyndns.org/bettermall/assets/stores/1/logo.png",
-                "manager_name": "Someone",
-                "bio": "it's a store, mkay",
-                "website": "http://www.ackermans.co.za/",
-                "twitter": "Ackermans_SA",
-                "facebook": "AckermansSA",
-                "phone": "0860900600",
-                "email": false
-            },
-            }
-                "storeid": "1"
-                (and so on
-            }
-        ]
-
-Stats
-----
-
-MAPI can do some stats which owners might find interesting. Here's how you can make MAPI log data.
-
-For each view of a mall or store, call the following url
-
-###`/stats/[mall|store]`
-*Input parameters:* `mallid` or `storeid`
-
-This function will log the view and return the id you gave it, as confirmation.
-
-###`/stats/stars`
-*Input parameters:* `storeid` (optional)
-
-If you give this function a storeid, it will return the number of times the store has been starred.
-
-Otherwise, the function will return a leaderboard in the following format:
-    
-    [
-        {
-            "storeid": "3",
-            "stars": "2"
-        },
+<pre><code>    [
         {
             "storeid": "2",
-            "stars": "1"
+            "mallid": "1",
+            "typeid": "1",
+            "type_name": "Fashion &amp; Accessories",
+            "name": "Ackermans",
+            "logo": "http://mattsains.dyndns.org/bettermall/assets/stores/1/logo.png",
+            "manager_name": "Someone",
+            "bio": "it's a store, mkay",
+            "website": "http://www.ackermans.co.za/",
+            "twitter": "Ackermans_SA",
+            "facebook": "AckermansSA",
+            "phone": "0860900600",
+            "email": false
+        },
+        }
+            "storeid": "1"
+            (and so on
         }
     ]
+</code></pre>
 
-This will return the top twenty stores.
+<h2>
+<a name="stats" class="anchor" href="#stats"><span class="mini-icon mini-icon-link"></span></a>Stats</h2>
 
-###`/stats/viewcount/[mall|store]`
+<p>MAPI can do some stats which owners might find interesting. Here's how you can make MAPI log data.</p>
+
+<p>For each view of a mall or store, call the following url</p>
+
+<h3>
+<a name="statsmallstore" class="anchor" href="#statsmallstore"><span class="mini-icon mini-icon-link"></span></a><code>/stats/[mall|store]</code>
+</h3>
+
+<p><em>Input parameters:</em> <code>mallid</code> or <code>storeid</code></p>
+
+<p>This function will log the view and return the id you gave it, as confirmation.</p>
+
+<h3>
+<a name="statsstars" class="anchor" href="#statsstars"><span class="mini-icon mini-icon-link"></span></a><code>/stats/stars</code>
+</h3>
+
+<p><em>Input parameters:</em> <code>storeid</code> (optional)</p>
+
+<p>If you give this function a storeid, it will return the number of times the store has been starred.</p>
+
+<p>Otherwise, the function will return a leaderboard in the following format:</p>
+
+<pre><code>[
+    {
+        "storeid": "3",
+        "stars": "2"
+    },
+    {
+        "storeid": "2",
+        "stars": "1"
+    }
+]
+</code></pre>
+
+<p>This will return the top twenty stores.</p>
+
+<h3>
+<a name="statsviewcountmallstore" class="anchor" href="#statsviewcountmallstore"><span class="mini-icon mini-icon-link"></span></a><code>/stats/viewcount/[mall|store]</code>
+</h3></article>
