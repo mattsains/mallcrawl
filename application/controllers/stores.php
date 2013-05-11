@@ -128,6 +128,7 @@ class Stores extends CI_Controller
             server_error(strip_tags($this->image_lib->display_errors()));
         
         //image resize went OK, now save to the database.
+        $this->store->select($storeid);
         $url=$this->store->add_image($userid,$orig_image['full_path'],$config['new_image']);
         if (!$url)
             server_error("couldn't add the image to the database",true);
