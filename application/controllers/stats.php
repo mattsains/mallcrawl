@@ -84,16 +84,10 @@ class Stats extends CI_Controller
                 error('mallid is invalid');
             //get list of number of stars
             $output=array();
-            $this->db->select('storeid');
-            $this->db->where('mallid',$mallid);
-            $query=$this->db->get('stores');
-            foreach($query->result() as $row)
-            {
-                $storequery=$this->db->query('SELECT count(*) as count from `store-lists` where `storeid`='.$row->storeid);
-                $result=$storequery->result();
-                $result=$result[0];
-                $output[]=array('storeid'=>(int)$row->storeid, 'stars'=>(int)$result->count);
-            }
+            $query=$this->db->query('SELECT `store-lists`.`storeid`, count(*) as stars FROM `store-lists` WHERE `store-lists`.`storeid` IN (SELECT `stores`.`storeid` FROM `stores` WHERE `stores`.`mallid`='.$mallid.') GROUP BY `store-lists`.`storeid` ORDER BY stars DESC');
+            
+            foreach ($query->result() as $row)
+                $output[]=array('storeid'=>(int)$row->storeid, 'stars'=>(int)$row->stars);
             send_json($output);
         }
     }
