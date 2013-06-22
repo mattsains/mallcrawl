@@ -34,7 +34,7 @@ class Mall extends CI_Model
         $y_coord=(double)$y_coord;
         $limit=(int)$limit;
         
-        $query=$this->db->query("SELECT `mallid` FROM `malls` ORDER BY (POWER(`x_coord`-$x_coord,2)+POWER(`y_coord`-$y_coord,2))");
+        $query=$this->db->query("SELECT `mallid` FROM `malls` WHERE `active`=1 ORDER BY (POWER(`x_coord`-$x_coord,2)+POWER(`y_coord`-$y_coord,2))");
         
         $malls=array();
         foreach($query->result() as $row)
@@ -42,12 +42,14 @@ class Mall extends CI_Model
         return $malls;
     }
     /// Returns true if the mallid actually exists
-    function exists($mallid)
+    function exists($mallid, $also_inactive=false)
     {
         $mallid=(int)$mallid;
         
         $this->db->select('mallid');
         $this->db->where('mallid',$mallid);
+        if (!$also_inactive)
+            $this->db->where('active',1);
         $query=$this->db->get('malls');
         return $query->num_rows()>0;
     }
@@ -73,7 +75,7 @@ class Mall extends CI_Model
                       'map'=>isset($data['map'])?$data['map']:null, 'secret'=>$secret, 'manager_name'=>$data['manager_name'], 'bio'=>$data['bio'],
                       'website'=>isset($data['website'])?$data['website']:null, 'facebook'=>isset($data['facebook'])?$data['facebook']:null, 
                       'twitter'=>isset($data['twitter'])?$data['twitter']:null, 'phone'=>$data['phone'], 'email'=>isset($data['email'])?$data['email']:null,
-                      'polygon_path'=>isset($data['polygon_path'])?$data['polygon_path']:null);
+                      'polygon_path'=>isset($data['polygon_path'])?$data['polygon_path']:null, 'active'=>isset($data['active'])?(!!$data['active']):0);
         //time to insert into the db
         $this->db->insert('malls',$insert);
         $mall=(int)$this->db->insert_id();

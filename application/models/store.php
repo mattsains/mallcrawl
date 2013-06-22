@@ -28,12 +28,14 @@ class Store extends CI_Model
     }
     
     /// Returns true if the storeid actually exists
-    function exists($store)
+    function exists($store,$also_inactive=false)
     {
         $store=(int)$store;
         
         $this->db->select('storeid');
         $this->db->where('storeid',$store);
+        if (!$also_inactive)
+            $this->db->where('active',1);
         $query=$this->db->get('stores');
         return $query->num_rows()>0;
     }
@@ -70,7 +72,7 @@ class Store extends CI_Model
         $insert=array('mallid'=>(int)$data['mallid'], 'typeid'=>(int)$data['typeid'], 'manager_name'=>$data['manager_name'], 'ownerid'=>(int)$data['ownerid'],
                       'name'=>$data['name'], 'email'=>isset($data['email'])?$data['email']:null, 'bio'=>$data['bio'], 'facebook'=>isset($data['facebook'])?$data['facebook']:null,
                       'twitter'=>isset($data['twitter'])?$data['twitter']:null, 'website'=>isset($data['website'])?$data['website']:null,
-                      'phone'=>$data['phone']);
+                      'phone'=>$data['phone'], 'active'=>isset($data['active'])?(!!$data['active']):0);
         //time to insert into the db
         $this->db->insert('stores',$insert);
         $store=(int)$this->db->insert_id();
@@ -153,17 +155,17 @@ class Store extends CI_Model
     
     /// Gets details about all the stores in the mall
     /// This is a STATELESS function, it works alone.
-    function list_mall($mallid)
+    function list_mall($mallid, $also_inactive=false)
     {
         //this needs to change
         $mallid=(int)$mallid;
         
         $this->load->model('mall');
-        if (!$this->mall->exists($mallid)) return false;
+        if (!$this->mall->exists($mallid,$also_inactive)) return false;
         
         $query=$this->db->query('SELECT `stores`.`storeid`, `stores`.`typeid`, `types`.`text` AS `typename`, `stores`.`name`, `stores`.`logo`, `stores`.`manager_name`, `stores`.`email`, `stores`.`bio`, `stores`.`facebook`, `stores`.`twitter`, `stores`.`website`,`stores`.`phone`'.
                                 ' FROM `stores` LEFT JOIN `types` ON `stores`.`typeid`=`types`.`typeid`'.
-                                ' WHERE `stores`.`mallid`='.$mallid.
+                                ' WHERE `stores`.`mallid`='.$mallid.($also_inactive?"":" AND `stores`.`active`=1").
                                 ' ORDER BY `stores`.`name`');
         $output=$query->result_array();
         foreach($output as $key=>$store)
