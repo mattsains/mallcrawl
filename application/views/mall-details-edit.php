@@ -1,6 +1,6 @@
 <section id="main_content">
-    
-    <?php echo form_open(current_url().'?edit=1');?>
+    <?php echo validation_errors(); ?>
+    <?php echo form_open_multipart($submit_to);?>
     <div id="map_canvas"></div>
     <input type="hidden" name="mallid" value="<?php echo $mallid;?>" />
     <input type="hidden" name="x_coord" id="x_coord" value="<?php echo $x_coord;?>" />
@@ -10,9 +10,9 @@
         <div><label for="name">Name:</label> <input type="text" class="h2-like" name="name" value="<?php echo set_value('name',$name); ?>"/></div>
         <?php echo form_error('manager_name','<span class="error">','</span>');?>
         <div><label for="manager_name">Manager:</label> <input type="text" name="manager_name" value="<?php echo set_value('manager_name',$manager_name); ?>"/></div>
-        <?php echo form_error('map','<span class="error">','</span>');?>
+        <?php if (isset($map_err)) echo $map_err;?>
         <div><label for="map">Map:</label> <input type="file" name="map" /></div>
-        <?php echo form_error('logo','<span class="error">','</span>');?>
+        <?php if (isset($logo_err)) echo $logo_err;?>
         <div><label for="logo">Logo:</label> <input type="file" name="logo"/></div>
         <?php echo form_error('website','<span class="error">','</span>');?>
         <div><label for="website">Website:</label> <input type="text" name="website" value="<?php echo set_value('website',$website);?>" /></div>

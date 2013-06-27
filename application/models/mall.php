@@ -127,4 +127,17 @@ class Mall extends CI_Model
         
         return $output;
     }
+    
+    ///Updates certain fields
+    public function update($field_arr)
+    {
+        if (!$this->mallid)
+            return false;
+        
+        
+        $this->db->where('mallid',$this->mallid);
+        $this->db->update('malls',$field_arr);
+        //refresh
+        $this->select($this->mallid);
+    }
 }

@@ -3,7 +3,7 @@
     <span class="fields">
     <img class="logo" src="<?php echo $logo;?>" alt="<?php echo $name;?>"/><br/>
     <h2 class="title"><?php echo $name; ?></h3>
-    
+    <div style="text-align:center;"><a href="?edit=1">[edit]</a></div>
         <div><span class="label">Manager:</span> <?php echo $manager_name; ?></div>
         <div><span class="label">Map:</span> <a href="<?php echo $map;?>"><?php echo $map;?></a></div>
         <div><span class="label">Secret:</span> <?php echo $secret;?></div>

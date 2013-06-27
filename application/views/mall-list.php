@@ -15,4 +15,5 @@
     ?>
     </table>
     <?php echo $pagination;?>
+    <div><a href="malls/new">Add a mall</a>
 </section>
