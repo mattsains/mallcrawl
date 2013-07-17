@@ -1,5 +1,4 @@
 <section id="main_content">
-    <?php echo validation_errors(); ?>
     <?php echo form_open_multipart($submit_to);?>
     <div id="map_canvas"></div>
     <input type="hidden" name="mallid" value="<?php echo $mallid;?>" />

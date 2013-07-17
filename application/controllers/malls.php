@@ -203,12 +203,13 @@ class Malls extends CI_Controller
     public function _new()
     {
         $this->load->model('owner');
+        $this->load->model('mall');
         $this->load->helper('bytes');
         //make sure there is an owner logged in
         $this->owner->login();
         $this->load->library('form_validation');
-        
-        if ($this->input->post('mallid'))//form data to check
+        $this->load->library('upload');
+        if ($this->input->post('name'))//form data to check
         {
             $this->form_validation->set_rules('name','Name','required|trim|max_length[50]|callback_html_special');
             $this->form_validation->set_rules('manager_name','Manager Name','required|trim|max_length[50]|callback_html_special');
@@ -227,13 +228,16 @@ class Malls extends CI_Controller
                 //validation failed
                 $this->load->view('header',array('title'=>'New mall',
                 'map'=>array('edit'=>'yes','x_coord'=>$this->input->post('x_coord'),'y_coord'=>$this->input->post('y_coord'))));
-                $this->load->view('mall-details-edit', array_merge($_FORM,array('submit_to'=>current_url())));
+                $this->load->view('mall-details-edit', array_merge($_POST,array('submit_to'=>current_url())));
                 $this->load->view('footer');
             } else
             {
-                //update database
+                
+                //insert into database
                 $to_insert=array('name'=>$this->input->post('name'),
                                 'manager_name'=>$this->input->post('manager_name'),
+                                'x_coord'=>$this->input->post('x_coord'),
+                                'y_coord'=>$this->input->post('y_coord'),
                                 'website'=>$this->input->post('website'),
                                 'twitter'=>$this->input->post('twitter'),
                                 'facebook'=>$this->input->post('facebook'),
@@ -243,6 +247,7 @@ class Malls extends CI_Controller
                                 'secret'=>rand_hex(8),
                                 'ownerid'=>$this->owner->ownerid);
                 $newmallid=$this->mall->create($to_insert);
+                var_dump($newmallid);
                 //add a directory to put mall assets into
                 if (!is_dir($this->config->item('api-dir')."application/assets/malls/$newmallid/"))
                     mkdir($this->config->item('api-dir')."application/assets/malls/$newmallid/",0755,true);
@@ -254,7 +259,7 @@ class Malls extends CI_Controller
                 
                     //we have a new map to upload
                     $upload=array();
-                    $upload['upload_path']=realpath($this->config->item('api-dir')."/application/assets/malls/".$mallid."/");
+                    $upload['upload_path']=realpath($this->config->item('api-dir')."/application/assets/malls/".$newmallid."/");
                     $upload['allowed_types']='jpg|jpeg|png';
                     $upload['max_size']='200';//kB
                     $upload['max_width']='1300';
@@ -285,20 +290,22 @@ class Malls extends CI_Controller
                 {
                     //we have a new logo to upload
                     $upload=array();
-                    $upload['upload_path']=realpath($this->config->item('api-dir')."/application/assets/malls/".$mallid."/");
+                    $upload['upload_path']=realpath($this->config->item('api-dir')."/application/assets/malls/".$newmallid."/");
                     $upload['allowed_types']='jpg|jpeg|png';
-                    $upload['max_size']='100';//kB
-                    $upload['max_width']='500';
-                    $upload['max_height']='500';//do I care?
+                    $upload['max_size']='200';//kB
+                    $upload['max_width']='1300';
+                    $upload['max_height']='1000';//do I care?
                     $upload['encrypt_name']=true; //sacrificing good file names for safety
                     $this->upload->initialize($upload);
                     
                     if (!$this->upload->do_upload('logo'))
                     {
                         //error with upload
+                        //same fancy trick
                         $this->load->view('header',array('title'=>$this->mall->name,
                         'map'=>array('edit'=>'yes','x_coord'=>$this->input->post('x_coord'),'y_coord'=>$this->input->post('y_coord'))));
-                        $this->load->view('mall-details-edit', array_merge($_POST,array("logo_err"=>$this->upload->display_errors('<span class="error">','</span>'))));
+                        $this->load->view('mall-details-edit', array_merge($_POST,array('logo_err'=>$this->upload->display_errors('<span class="error">','</span>'),
+                                                                                        'submit_to'=>site_url('malls/'.$newmallid).'?edit=1')));
                         $this->load->view('footer');
                         return;
                     }
@@ -308,22 +315,23 @@ class Malls extends CI_Controller
                         $logopath=$mallid.'/'.$data['file_name'];
                     }
                 }
-                //TODO
                 
+                $to_update=array();
                 if (isset($mappath))
                   $to_update['map']=$mappath;
                 if (isset($logopath))
                   $to_update['logo']=$logopath;
-                $this->mall->update($to_update);
+                if (isset($mappath) || isset($logopath))
+                    $this->mall->update($to_update);
                 //we're done, time to redirect to the form
-                redirect(site_url('malls/'.$mallid));
+                redirect(site_url('malls/'.$newmallid));
             }
         } else
         {
             //just show the form
-            $this->load->view('header',array('title'=>'New mall','map'=>'edit','map'=>array('edit'=>'yes','x_coord'=>'-33.801564','y_coord'=>'25.530185')));
+            $this->load->view('header',array('title'=>'New mall','map'=>'edit','map'=>array('edit'=>'yes','x_coord'=>'-33.93472657551387','y_coord'=>'25.569795862731894')));
             $this->load->view('mall-details-edit', array('submit_to'=>current_url(),
-                                                         'mallid'=>'', 'name'=>'', 'manager_name'=>'', 'x_coord'=>'-33.801564', 'y_coord'=>'25.530185', 'website'=>'', 'twitter'=>'', 'facebook'=>'', 'phone'=>'', 'email'=>'', 'bio'=>''));
+                                                         'mallid'=>'', 'name'=>'', 'manager_name'=>'', 'x_coord'=>'-33.93472657551387', 'y_coord'=>'25.569795862731894', 'website'=>'', 'twitter'=>'', 'facebook'=>'', 'phone'=>'', 'email'=>'', 'bio'=>''));
             $this->load->view('footer');
         }
     }

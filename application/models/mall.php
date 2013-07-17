@@ -56,7 +56,7 @@ class Mall extends CI_Model
     function create($data)
     {
         //check for compulsory fields
-        if (!($data['ownerid'] && $data['name'] && $data['x_coord'] && $data['y_coord'] && $data['manager_name'] && $data['bio'] && $data['phone']))
+        if (!($data['ownerid'] && $data['name'] && $data['x_coord'] && $data['y_coord'] && $data['manager_name'] && $data['phone']))
             return false;
             
         //some cleansing

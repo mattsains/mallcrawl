@@ -1,5 +1,5 @@
 <?php
-	function rand_hex($len)
+	function rand_str($len)
 	{
 		$str='';
 		srand(time());
@@ -10,9 +10,13 @@
 		}
 		return $str;
 	}
+    function rand_hex()
+    {
+        return dechex(rand(268435456,4294967295)); // 1000 000 to FFFF FFFF
+    }
 	function salted_hash($pass)
 	{
-		$salt=rand_hex(50);
+		$salt=rand_str(50);
 		return array('salt'=>$salt,'hash'=>make_hash($salt,$pass));
 	}
     function make_hash($salt,$pass)
