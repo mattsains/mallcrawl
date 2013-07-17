@@ -24,7 +24,54 @@ class Malls extends CI_Controller
         }
         send_json($mall_object);
     }
-    
+    ///Returns malls in the city/province combination
+    public function in()
+    {
+        if (!$this->input->post('city'))
+            error('You did not provide a city');
+        if (!$this->input->post('province'))
+            error('You did not provide a province');
+        
+        $this->load->model('mall');
+        
+        $mall_object=array();
+        foreach ($this->mall->in($this->input->post('city'),$this->input->post('province'),10) as $mallid)
+        {
+            $this->mall->select($mallid);//don't check the mallid because we have just gotten it from the database
+            $mall_object[]=$this->mall->as_array();
+        }
+        send_json($mall_object);
+    }
+    ///Returns a list of provinces
+    public function provinces()
+    {
+        $this->load->database();
+        
+        $query=$this->db->query("SELECT DISTINCT(province) FROM malls WHERE active=1");
+        
+        $provinces=array();
+        foreach ($query->result() as $row)
+            $provinces[]=$row->province;
+        send_json($provinces);
+    }
+    ///Returns a list of cities in a province
+    public function cities()
+    {
+        if (!$this->input->post('province'))
+            error('You did not provice a province');
+
+        $this->load->database();
+        
+        $this->db->select('city');
+        $this->db->where('province',$this->input->post('province'));
+        $this->db->group_by('city');
+        $query=$this->db->get('malls');
+        
+        $cities=array();
+        foreach ($query->result() as $row)
+            $cities[]=$row->city;
+        send_json($cities);
+    }
     ///Returns information about a specific mall
     public function index()
     {
@@ -35,6 +82,7 @@ class Malls extends CI_Controller
         $this->load->model('mall');
         $this->mall->select($mallid) or error('mallid is invalid');
         send_json(array('mallid'=>$mallid, 'name'=>$this->mall->name, 'x_coord'=>$this->mall->x_coord, 'y_coord'=>$this->mall->y_coord, 
+                        'city'=>$this->mall->city, 'province'=>$this->mall->province,
                         'manager_name'=>$this->mall->manager_name, 'bio'=>$this->mall->bio, 'website'=>$this->mall->website, 'twitter'=>$this->mall->twitter, 
                         'facebook'=>$this->mall->facebook, 'phone'=>$this->mall->phone, 'email'=>$this->mall->email, 'logo'=>$this->mall->logo, 'map'=>$this->mall->map, 'polygons'=>$this->mall->polygons));
     }

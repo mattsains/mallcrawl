@@ -67,8 +67,10 @@ Malls
 Returns information about a mall:
 * `mallid` - a unique integer
 * `name` - the name of the mall, eg., "Walmer Park"
-* `x_coord` This along with `y_coord` are decimal coordinates, eg., -35.24521 
+* `x_coord` - This along with `y_coord` are decimal coordinates, eg., -35.24521 
 * `y_coord`
+* `city` - The city the mall is in
+* `province` - The province the mall is in
 * `manager_name` - the name of the manager of the mall
 * `bio` - a shortish description of the mall
 * `website` - the mall's website URL\*
@@ -89,6 +91,8 @@ Here is an example:
         "name": "Walmer Park",
         "x_coord": "-33.980316",
         "y_coord": "25.557826",
+        "city": "Port Elizabeth",
+        "province": "Eastern Cape",
         "manager_name": "Me",
         "bio": "So and so",
         "website": false,
@@ -114,6 +118,8 @@ Here is an example:
             "name": "Greenacres",
             "x_coord": "-33.949198",
             "y_coord": "25.576901",
+            "city": "Port Elizabeth",
+            "province": "Eastern Cape",
             "manager_name": "h",
             "bio": "h",
             "website": false,
@@ -130,6 +136,8 @@ Here is an example:
             "name": "Walmer Park",
             "x_coord": "-33.980316",
             "y_coord": "25.557826",
+            "city": "Port Elizabeth",
+            "province": "Eastern Cape",
             "manager_name": "Me",
             "bio": "So and so",
             "website": false,
@@ -142,7 +150,61 @@ Here is an example:
             "polygons": "http://mattsains.dyndns.org/bettermall/assets/malls/"
         }
     ]
-    
+
+###`/malls/provinces`
+*Input parameters:* none
+
+Returns a list of provinces
+
+###`/malls/cities`
+*Input parameters:* `province`
+
+Returns a list of cities in the province
+
+###`/malls/in`
+*Input parameters:* `city`, `province`
+
+Returns a list of malls in the city-province combination. This is used probably only for the mxit app
+
+    [
+        {
+            "mallid": "2",
+            "name": "Greenacres",
+            "x_coord": "-33.949198",
+            "y_coord": "25.576901",
+            "city": "Port Elizabeth",
+            "province": "Eastern Cape",
+            "manager_name": "h",
+            "bio": "h",
+            "website": false,
+            "twitter": false,
+            "facebook": false,
+            "phone": "1",
+            "email": false,
+            "logo": "http://mattsains.dyndns.org/bettermall/assets/malls/h.png",
+            "map": "http://mattsains.dyndns.org/bettermall/assets/malls/",
+            "polygons": "http://mattsains.dyndns.org/bettermall/assets/malls/"
+        },
+        {
+            "mallid": "1",
+            "name": "Walmer Park",
+            "x_coord": "-33.980316",
+            "y_coord": "25.557826",
+            "city": "Port Elizabeth",
+            "province": "Eastern Cape",
+            "manager_name": "Me",
+            "bio": "So and so",
+            "website": false,
+            "twitter": false,
+            "facebook": false,
+            "phone": "08124512",
+            "email": false,
+            "logo": "http://mattsains.dyndns.org/bettermall/assets/malls/x.jpg",
+            "map": "http://mattsains.dyndns.org/bettermall/assets/malls/",
+            "polygons": "http://mattsains.dyndns.org/bettermall/assets/malls/"
+        }
+    ]
+
 ###`/malls/stores`
 *Input parameters:* `mallid`
 
@@ -299,6 +361,8 @@ This function can be used to make sure you have a legitimate login. If there is 
                 "name": "Walmer Park",
                 "x_coord": "-33.980316",
                 "y_coord": "25.557826",
+                "city": "Port Elizabeth",
+                "province": "Eastern Cape",
                 "manager_name": "Me",
                 "bio": "So and so",
                 "website": false,
@@ -315,6 +379,8 @@ This function can be used to make sure you have a legitimate login. If there is 
                 "name": "Greenacres",
                 "x_coord": "-33.949198",
                 "y_coord": "25.576901",
+                "city": "Port Elizabeth",
+                "province": "Eastern Cape",
                 "manager_name": "h",
                 "bio": "h",
                 "website": false,
