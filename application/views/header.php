@@ -43,6 +43,11 @@
         <ul>
             <li><a href="<?php echo base_url();?>">Home</a></li>
             <li><a href="<?php echo base_url();?>malls">Malls</a></li>
-            <li><a href="#">Potentially other things</a></li>
+            <?php if (logged_in()){ ?>
+                <li><a href="<?php echo base_url();?>auth/logout">Logout</a></li>
+            <?php } else { ?>
+                <li><a href="<?php echo base_url();?>auth/login">Login</a></li>
+                <li><a href="<?php echo base_url();?>auth/register">Register</a></li>
+            <?php } ?>
         </ul>
     </nav>

@@ -8,4 +8,5 @@
             <div class="form_field"><label for="password">Password</label><input name="password" id="password" type="password" value="" /></div>
             <div class="form_field"><input type="submit" value="Log in"/></div>
         </form>
+        <div style="margin-left:200px;"><a href="<?php echo base_url();?>auth/register">Register a new account</a></div>
     </section>

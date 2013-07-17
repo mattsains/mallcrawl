@@ -16,7 +16,7 @@ class Owner extends CI_Model
     }
     
     /// Allow only A-Z, dot, hyphen and numbers
-    private function clean_uname($uname)
+    public function clean_uname($uname)
     {
         return strtolower(preg_replace("[^a-zA-Z\.\-0-9]",'',$uname)); 
     }
@@ -141,5 +141,23 @@ class Owner extends CI_Model
     function logout()
     {
         $this->session->sess_destroy();
+    }
+    /// Adds an owner to the database
+    /// returns the new owner id
+    /// NOTE: also selects new owner
+    function add($uname, $psw)
+    {
+        $this->load->helper('bytes');
+        // make usernames cleaner
+        $uname=$this->clean_uname($uname);
+        if ($this->uname_exists($uname)) return false;
+        
+        $sh=salted_hash($psw);
+        $this->db->insert('owners', array( 
+                                   'uname'=>$uname,
+                                   'salt'=>$sh['salt'],
+                                   'hash'=>$sh['hash']));
+        $this->select($this->db->insert_id());
+        return $this->ownerid;
     }
 }
