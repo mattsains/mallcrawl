@@ -1,0 +1,1 @@
+<?phpfunction logged_in(){    $CI=&get_instance();    return $CI->owner->login(false);}
