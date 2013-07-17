@@ -13,8 +13,7 @@
         <div><span class="label">Phone:</span> <?php echo $phone;?></div>
         <div><span class="label">Email:</span> <a href="mailto:<?php echo $email;?>"><?php echo $email;?></a></div>
         <div><span class="label">Bio:</span> <?php echo $bio;?></div>
-        <br/>
-        
+    <h3>Associated stores:</h3>
     <table class="storelist">
     <tr><th>Name</th><th>Type</th><?php if (ISSET($is_admin)){?><th>Creator</th><?php }?><th>Manager</th><th>Phone</th><th>Starred</th></tr>
     <?php 
@@ -26,5 +25,7 @@
         echo "<td>".$store['manager_name']."</td><td>".$store['phone']."</td><td>Starred</td></td>";
     }
     ?>
-    </table></span>
+    </table>
+    <p>Give stores your secret (<?php echo $secret; ?>) so that they can attach themselves to your mall</p>
+    </span>
 </section>
