@@ -22,7 +22,8 @@
                 mapOptions);
             marker = new google.maps.Marker({
                   position: mapOptions.center,
-                  draggable: true,
+                  <?php if (ISSET($map['edit'])){?> draggable: true, <?php } else {?>
+                                                    draggable: false, <?php } ?>
                   map: map
                 });
             <?php if (ISSET($map['edit'])){?>
@@ -43,6 +44,7 @@
         <ul>
             <li><a href="<?php echo base_url();?>">Home</a></li>
             <li><a href="<?php echo base_url();?>malls">Malls</a></li>
+            <li><a href="<?php echo base_url();?>stores">Stores</a></li>
             <?php if (logged_in()){ ?>
                 <li><a href="<?php echo base_url();?>auth/logout">Logout</a></li>
             <?php } else { ?>

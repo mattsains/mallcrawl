@@ -1,5 +1,5 @@
 <section id="main_content">
-    <table>
+    <table align="center">
     <tr><th>Logo</th><th>Mall</th><?php if ($is_admin) echo "<th>Creator</th>";?><th>Manager</th><th>Phone</th><th>Starred</th></tr>
     <?php
         foreach($malls as $mall)
@@ -14,6 +14,8 @@
         }
     ?>
     </table>
-    <?php echo $pagination;?>
-    <div><a href="<?php echo site_url('malls/new');?>">Add a mall</a>
+    <div style="text-align:center">
+        <?php echo $pagination;?>
+        <a href="<?php echo site_url('malls/new');?>">Add a mall</a>
+    </div>
 </section>

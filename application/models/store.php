@@ -96,6 +96,8 @@ class Store extends CI_Model
             $this->$field=ISSET($result->$field)?
                             $result->$field : false;
         
+        $logopath=$result->logo;
+        $this->logo=$logopath?$this->config->item('api-path').'assets/stores/'.$logopath:false;
         // now figure out the name of the type of mall this is
         $typeid=(int)$this->typeid;
         $this->db->where('typeid',$typeid);
@@ -117,7 +119,7 @@ class Store extends CI_Model
         if (!$this->mallid)
             return false;
         
-        $return_fields=array('storeid','mallid','typeid','type_name','name','manager_name','bio','website','twitter','facebook','phone','email');
+        $return_fields=array('storeid','mallid','typeid','type_name','name','manager_name','bio','website','twitter','facebook','phone','email','logo');
         
         $output=array();
         
@@ -125,6 +127,19 @@ class Store extends CI_Model
             $output[$field]=$this->$field;
         
         return $output;
+    }
+    
+    ///Updates certain fields
+    public function update($field_arr)
+    {
+        if (!$this->storeid)
+            return false;
+        
+        
+        $this->db->where('storeid',$this->storeid);
+        $this->db->update('stores',$field_arr);
+        //refresh
+        $this->select($this->storeid);
     }
     
     /// returns a list of categories that the store belongs to
@@ -170,6 +185,14 @@ class Store extends CI_Model
                 $output[$key][$optfield]=ISSET($output[$key][$optfield])?$output[$key][$optfield]:false;
         }
         return $output;
+    }
+    
+    /// Gets all possible types
+    /// STATELESS - works alone
+    function all_types()
+    {
+        $query=$this->db->get('types');
+        return $query->result_array();
     }
     
     /// Returns a list of image URLs, their author, and timestamp

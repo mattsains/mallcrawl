@@ -1,7 +1,6 @@
 <?php
 class Malls extends CI_Controller
 {
-
     function _remap($arg1,$arg2)
     {
         if ($arg1=="index")
@@ -99,7 +98,7 @@ class Malls extends CI_Controller
                         //validation failed
                         $this->load->view('header',array('title'=>$this->mall->name,
                         'map'=>array('edit'=>'yes','x_coord'=>$this->input->post('x_coord'),'y_coord'=>$this->input->post('y_coord'))));
-                        $this->load->view('mall-details-edit', array_merge($_FORM,array('submit_to'=>current_url().'?edit=1')));
+                        $this->load->view('mall-details-edit', array_merge($_POST,array('submit_to'=>current_url().'?edit=1')));
                         $this->load->view('footer');
                     } else
                     {
@@ -182,7 +181,7 @@ class Malls extends CI_Controller
                 } else
                 {
                     //just show the form
-                    $this->load->view('header',array('title'=>$this->mall->name,'map'=>'edit','map'=>array('edit'=>'yes','x_coord'=>$this->mall->x_coord,'y_coord'=>$this->mall->y_coord)));
+                    $this->load->view('header',array('title'=>$this->mall->name,'map'=>array('edit'=>'yes','x_coord'=>$this->mall->x_coord,'y_coord'=>$this->mall->y_coord)));
                     $this->load->view('mall-details-edit', array_merge($this->mall->as_array(),array('submit_to'=>current_url().'?edit=1')));
                     $this->load->view('footer');
                 }
@@ -329,7 +328,7 @@ class Malls extends CI_Controller
         } else
         {
             //just show the form
-            $this->load->view('header',array('title'=>'New mall','map'=>'edit','map'=>array('edit'=>'yes','x_coord'=>'-33.93472657551387','y_coord'=>'25.569795862731894')));
+            $this->load->view('header',array('title'=>'New mall','map'=>array('x_coord'=>'-33.93472657551387','y_coord'=>'25.569795862731894')));
             $this->load->view('mall-details-edit', array('submit_to'=>current_url(),
                                                          'mallid'=>'', 'name'=>'', 'manager_name'=>'', 'x_coord'=>'-33.93472657551387', 'y_coord'=>'25.569795862731894', 'website'=>'', 'twitter'=>'', 'facebook'=>'', 'phone'=>'', 'email'=>'', 'bio'=>''));
             $this->load->view('footer');
