@@ -58,7 +58,7 @@ class Malls extends CI_Controller
     public function cities()
     {
         if (!$this->input->post('province'))
-            error('You did not provice a province');
+            error('You did not provide a province');
 
         $this->load->database();
         
