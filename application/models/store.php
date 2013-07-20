@@ -52,7 +52,7 @@ class Store extends CI_Model
     function create($data)
     {
         //check for compulsory fields
-        if (!($data['mallid'] && $data['typeid'] && $data['manager_name'] && $data['ownerid'] && $data['name'] && $data['bio'] && $data['phone']))
+        if (!($data['mallid'] && $data['typeid'] && $data['manager_name'] && $data['ownerid'] && $data['name'] && $data['phone']))
             return false;
             
         //some cleansing

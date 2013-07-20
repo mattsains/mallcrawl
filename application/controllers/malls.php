@@ -59,7 +59,7 @@ class Malls extends CI_Controller
     }
     /// Shows a single mall's information
     public function show($mallid)
-    {  
+    {
         $mallid=(int)$mallid;
         $this->owner->login();
         $this->load->model('mall');

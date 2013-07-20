@@ -111,7 +111,33 @@ class Mall extends CI_Model
         $this->polygons=$polygonpath?$this->config->item('api-path').'assets/malls/'.$polygonpath:false;
         return true;
     }
-    
+    function select_by_secret($secret)
+    {
+        $this->db->where('secret',$secret);
+        $query=$this->db->get('malls');
+        if ($query->num_rows()!=1) return false; //either the secret isn't in the database, 
+                            //or there are more than one mall with the same secret, which is very bad
+        
+        $result=$query->result();
+        $result=$result[0];//there should only be one mall with a unique id       
+        
+        //auto-populate fields
+        foreach ($this->fields as $field)
+        {
+            $this->$field=$result->$field?
+                            $result->$field : false;
+        }
+        
+        //some manual processing
+        //we need to turn these into proper urls
+        $logopath=$result->logo;
+        $mappath=$result->map;
+        $polygonpath=$result->polygon_path;
+        $this->logo=$logopath?$this->config->item('api-path').'assets/malls/'.$logopath:false;
+        $this->map=$mappath?$this->config->item('api-path').'assets/malls/'.$mappath:false;
+        $this->polygons=$polygonpath?$this->config->item('api-path').'assets/malls/'.$polygonpath:false;
+        return $this->mallid;
+    }
     /// Returns an array of the useful properties of this object
     public function as_array()
     {

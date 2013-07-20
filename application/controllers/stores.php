@@ -103,7 +103,7 @@ class Stores extends CI_Controller
                         {
                             //we have a new logo to upload
                             $upload=array();
-                            $upload['upload_path']=realpath($this->config->item('api-dir')."/application/assets/stores/".$mallid."/");
+                            $upload['upload_path']=realpath($this->config->item('api-dir')."/application/assets/stores/".$storeid."/");
                             $upload['allowed_types']='jpg|jpeg|png';
                             $upload['max_size']='100';//kB
                             $upload['max_width']='500';
@@ -114,8 +114,7 @@ class Stores extends CI_Controller
                             if (!$this->upload->do_upload('logo'))
                             {
                                 //error with upload
-                                $this->load->view('header',array('title'=>$this->mall->name,
-                                'map'=>array('edit'=>'yes','x_coord'=>$this->input->post('x_coord'),'y_coord'=>$this->input->post('y_coord'))));
+                                $this->load->view('header',array('title'=>$this->mall->name));
                                 $this->load->view('store-details-edit', array_merge($_POST,array('types'=>$this->store->all_types(),"logo_err"=>$this->upload->display_errors('<span class="error">','</span>'),'submit_to'=>current_url().'?edit=1')));
                                 $this->load->view('footer');
                                 return;
@@ -167,7 +166,162 @@ class Stores extends CI_Controller
             show_404(current_url());
         }
     }
-     public function html_special($str)
+    public function _new()
+    {
+        $this->load->model('owner');
+        $this->owner->login();//only logged in users can do this.
+        if ($this->input->post('name'))
+        {
+            $this->load->model(array('store','mall'));
+            //new store data coming through now
+            $this->load->library('form_validation');
+            $this->form_validation->set_rules('name','Name','required|trim|max_length[50]|callback_html_special');
+            $this->form_validation->set_rules('manager_name','Manager Name','required|trim|max_length[50]|callback_html_special');
+            $this->form_validation->set_rules('website','Website','trim|max_length[60]|callback_html_special');
+            $this->form_validation->set_rules('twitter','Twitter','trim|max_length[60]|callback_html_special');
+            $this->form_validation->set_rules('facebook','Facebook','trim|max_length[60]|callback_html_special');
+            $this->form_validation->set_rules('phone','Phone','callback_make_phone|required|max_length[11]');
+            $this->form_validation->set_rules('email','Email','valid_email|max_length[60]');
+            $this->form_validation->set_rules('bio','Bio','trim|callback_html_special');
+            
+            if (!$this->form_validation->run())
+            {
+                //validation failed
+                $this->load->view('header',array('title'=>$this->store->name));
+                $this->load->view('store-details-edit', array_merge($_POST,array('types'=>$this->store->all_types(),'submit_to'=>current_url().'?edit=1')));
+                $this->load->view('footer');
+            } else
+            {
+                //make sure secret is legit
+                $mallid=$this->mall->select_by_secret($this->input->post('secret'));
+                if (!$mallid)
+                {
+                    //we have to boot this request back to the very beginning
+                    redirect(current_url());
+                    return;
+                }
+                //now we have a legit mallid
+                
+                //insert new store
+                $to_insert=array('name'=>$this->input->post('name'),
+                                 'mallid'=>$mallid,
+                                 'manager_name'=>$this->input->post('manager_name'),
+                                 'website'=>$this->input->post('website'),
+                                 'twitter'=>$this->input->post('twitter'),
+                                 'facebook'=>$this->input->post('facebook'),
+                                 'phone'=>$this->input->post('phone'),
+                                 'email'=>$this->input->post('email'),
+                                 'typeid'=>$this->input->post('type'),
+                                 'bio'=>$this->input->post('bio'),
+                                 'ownerid'=>$this->owner->ownerid);
+                $storeid=$this->store->create($to_insert);
+                if (!$storeid)
+                {
+                    show_error('Failed to create the new store :(');
+                    return;//dunno if I need this?
+                }
+                //I'm going to make a directory for this store now so we don't have to worry about it later
+                if (!is_dir($this->config->item('api-dir')."application/assets/stores/$storeid/"))
+                    mkdir($this->config->item('api-dir')."application/assets/stores/$storeid/",0755,true);
+                //ok now we might have the ugly problem of file uploads
+                if (isset($_FILES['logo']['name']) && $_FILES['logo']['name']!="")
+                {
+                    //ok uploading things are weird because we need a storeid first, which we won't have until we insert into the database
+                    //anyway we have a storeid now so it is easier
+                    $this->load->library('upload');
+                    $upload=array();
+                    $upload['upload_path']=realpath($this->config->item('api-dir')."/application/assets/stores/".$storeid."/");
+                    $upload['allowed_types']='jpg|jpeg|png';
+                    $upload['max_size']='100';//kB
+                    $upload['max_width']='500';
+                    $upload['max_height']='500';//do I care?
+                    $upload['encrypt_name']=true; //sacrificing good file names for safety
+                    $this->upload->initialize($upload);
+                    
+                    if (!$this->upload->do_upload('logo'))
+                    {
+                        //error with upload
+                        //this is some magic over here: transparently transition to editing the mall
+                        $this->load->view('header',array('title'=>$this->mall->name));
+                        $this->load->view('store-details-edit', array_merge($_POST,array('storeid'=>$storeid,'types'=>$this->store->all_types(),"logo_err"=>$this->upload->display_errors('<span class="error">','</span>'),'submit_to'=>base_url().'stores/'.$storeid.'?edit=1')));
+                        $this->load->view('footer');
+                        return;
+                    }
+                    else
+                    {
+                        $data=$this->upload->data();
+                        $logopath=$storeid.'/'.$data['file_name'];
+                        $to_update=array('logo'=>$logopath);
+                        $this->store->update($to_update);
+                    }
+                }
+                
+                //we're done, time to redirect to the form
+                redirect(site_url('stores/'.$storeid));
+            }
+        }
+        else if ($this->input->post('verified'))
+        {
+            //the owner has confirmed the mall, show the form
+            
+            //well even if the secret is wrong, it'll be checked when this form gets submitted
+            $this->load->model('store');
+            
+            $this->load->view('header',array('title'=>'Add a store'));
+            $this->load->view('store-details-edit',array('secret'=>$this->input->post('secret'),'submit_to'=>base_url().'stores/new','types'=>$this->store->all_types()));
+            $this->load->view('footer');
+        }
+        else if ($this->input->post('secret'))
+        {
+            //make sure the owner wants to add to this mall
+            if (!$this->check_secret($this->input->post('secret')))
+            {
+                $this->load->view('header',array('title'=>'Add a store'));
+                $this->load->view('secret-verify',array('msg'=>'That secret is invalid. Secrets contain only numbers and the letters A-F'));
+                $this->load->view('footer');
+            } else 
+            {
+                //secret looks right, but does it correspond to a mall?
+                $this->load->model('mall');
+                $secret=$this->check_secret($this->input->post('secret'));
+                
+                $mallid=$this->mall->select_by_secret($secret);
+                
+                if (!$mallid)
+                {
+                    //no such secret
+                    $this->load->view('header',array('title'=>'Add a store'));
+                    $this->load->view('secret-verify',array('msg'=>'There is no mall with such a secret','secret'=>$secret));
+                    $this->load->view('footer');
+                }
+                else
+                {
+                    //this secret is bona fide
+                    //show the next form
+                    $this->load->view('header',array('title'=>'Add a store'));
+                    $this->load->view('secret-verify',array('mall'=>$this->mall->as_array()));
+                    $this->load->view('footer');
+                }
+            }
+        } else
+        {
+            //ask for a secret
+            $this->load->view('header',array('title'=>'Add a store'));
+            $this->load->view('secret-verify');
+            $this->load->view('footer');
+        }
+    }
+    /// Does 
+    public function check_secret($secret)
+    {
+        $secret=strtolower(trim($secret));
+        
+        for ($i=0; $i<strlen($secret); $i++)
+            if (!in_array($secret[$i],array('0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f')))
+                return false;
+        return $secret;
+    }
+    public function html_special($str)
     {
         return htmlspecialchars($str,ENT_QUOTES);
     }
