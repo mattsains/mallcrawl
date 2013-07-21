@@ -59,7 +59,7 @@ class Stores extends CI_Controller
     }
     /// Shows a single mall's information
     public function show($storeid)
-    {  
+    {
         $storeid=(int)$storeid;
         $this->owner->login();
         $this->load->model('store');
@@ -98,7 +98,7 @@ class Stores extends CI_Controller
                     {
                         //validation failed
                         $this->load->view('header',array('title'=>$this->store->name));
-                        $this->load->view('store-details-edit', array_merge($_POST,array('categorydata'=>$allcats,'types'=>$this->store->all_types(),'submit_to'=>current_url().'?edit=1')));
+                        $this->load->view('store-details-edit', array_merge($_POST,array('typeid'=>$this->store->typeid,'categorydata'=>$allcats,'types'=>$this->store->all_types(),'submit_to'=>current_url().'?edit=1')));
                         $this->load->view('footer');
                     } else
                     {
@@ -120,7 +120,7 @@ class Stores extends CI_Controller
                             {
                                 //error with upload
                                 $this->load->view('header',array('title'=>$this->mall->name));
-                                $this->load->view('store-details-edit', array_merge($_POST,array('types'=>$this->store->all_types(),"logo_err"=>$this->upload->display_errors('<span class="error">','</span>'),'submit_to'=>current_url().'?edit=1')));
+                                $this->load->view('store-details-edit', array_merge($_POST,array('typeid'=>$this->store->typeid,'types'=>$this->store->all_types(),"logo_err"=>$this->upload->display_errors('<span class="error">','</span>'),'submit_to'=>current_url().'?edit=1')));
                                 $this->load->view('footer');
                                 return;
                             }
@@ -214,7 +214,7 @@ class Stores extends CI_Controller
             {
                 //validation failed
                 $this->load->view('header',array('title'=>$this->store->name));
-                $this->load->view('store-details-edit', array_merge($_POST,array('categorydata'=>$this->store->all_categories(),'types'=>$this->store->all_types(),'submit_to'=>current_url().'?edit=1')));
+                $this->load->view('store-details-edit', array_merge($_POST,array('categorydata'=>$this->store->all_categories(),'typeid'=>$this->store->typeid,'types'=>$this->store->all_types(),'submit_to'=>current_url().'?edit=1')));
                 $this->load->view('footer');
             } else
             {
@@ -278,7 +278,7 @@ class Stores extends CI_Controller
                         //error with upload
                         //this is some magic over here: transparently transition to editing the mall
                         $this->load->view('header',array('title'=>$this->mall->name));
-                        $this->load->view('store-details-edit', array_merge($_POST,array('categorydata'=>$this->store->all_categories(),'storeid'=>$storeid,'types'=>$this->store->all_types(),"logo_err"=>$this->upload->display_errors('<span class="error">','</span>'),'submit_to'=>base_url().'stores/'.$storeid.'?edit=1')));
+                        $this->load->view('store-details-edit', array_merge($_POST,array('typeid'=>$this->store->typeid,'categorydata'=>$this->store->all_categories(),'storeid'=>$storeid,'types'=>$this->store->all_types(),"logo_err"=>$this->upload->display_errors('<span class="error">','</span>'),'submit_to'=>base_url().'stores/'.$storeid.'?edit=1')));
                         $this->load->view('footer');
                         return;
                     }
@@ -303,7 +303,7 @@ class Stores extends CI_Controller
             $this->load->model('store');
             
             $this->load->view('header',array('title'=>'Add a store'));
-            $this->load->view('store-details-edit',array('categorydata'=>$this->store->all_categories(),'secret'=>$this->input->post('secret'),'submit_to'=>base_url().'stores/new','types'=>$this->store->all_types()));
+            $this->load->view('store-details-edit',array('typeid'=>-1, 'categorydata'=>$this->store->all_categories(),'secret'=>$this->input->post('secret'),'submit_to'=>base_url().'stores/new','types'=>$this->store->all_types()));
             $this->load->view('footer');
         }
         else if ($this->input->post('secret'))
