@@ -17,7 +17,8 @@ class Stores extends CI_Controller
     /// If the user is an admin, shows all the malls
     public function page($page=0)
     {
-        $page=(int)$page;
+        if (count($page)==0) $page=0;
+        $page=(int)$page[0];
         $this->owner->login();
         //might as well paginate
         $this->load->library('pagination');
@@ -32,7 +33,7 @@ class Stores extends CI_Controller
         $result=$this->db->get('stores')->result();
         $result=$result[0];
         
-        $config['base_url']=base_url().'stores/';
+        $config['base_url']=base_url().'stores/page';
         $config['total_rows']=$result->count;
         $config['per_page']=20;
         
@@ -42,7 +43,7 @@ class Stores extends CI_Controller
         if (!$this->owner->is_admin)
             $sql.=' WHERE `stores`.`ownerid`='.((int)$this->owner->ownerid);
             
-        $sql.=' LIMIT '.$page.', '.($page+20);
+        $sql.=' LIMIT '.$page.', 20';
         
         $query=$this->db->query($sql);
         

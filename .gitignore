@@ -4,5 +4,4 @@
 */logs/*.php
 */cache/*
 */cache/!index.html
-*application/assets/*
 *application/config/*
