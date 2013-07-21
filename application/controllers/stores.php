@@ -42,7 +42,7 @@ class Stores extends CI_Controller
         if (!$this->owner->is_admin)
             $sql.=' WHERE `stores`.`ownerid`='.((int)$this->owner->ownerid);
             
-        $sql.=' LIMIT '.$page.', '.($page+20);
+        $sql.=' LIMIT '.$page.', 20';
         
         $query=$this->db->query($sql);
         
