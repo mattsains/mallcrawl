@@ -30,7 +30,7 @@ class Owner extends CI_Model
     function uname_exists($uname)
     {
         $this->db->select('ownerid');
-        $this->db->where('uname',$uname);
+        $this->db->where('uname',$this->clean_uname($uname));
         $query=$this->db->get('owners');
         return $query->num_rows()>0;
     }
@@ -43,7 +43,8 @@ class Owner extends CI_Model
         $query=$this->db->get('owners');
         if ($query->num_rows()!=1)
             return false;
-        $result=$query->result()[0];
+        $result=$query->result();
+        $result=$result[0];
         return (int)$result->ownerid;
     }
     
@@ -53,11 +54,13 @@ class Owner extends CI_Model
         $uname=$this->clean_uname($uname); 
 
         $this->db->where('uname',$uname);
+        $this->db->where('is_locked',0);
         $query=$this->db->get('owners');
         if ($query->num_rows()!=1)
             return false;
         
-        $dbpsw=$query->result()[0];
+        $dbpsw=$query->result();
+        $dbpsw=$dbpsw[0];
         $this->load->helper('bytes');
         $providedhash=make_hash($dbpsw->salt,$psw);
         if ($providedhash===$dbpsw->hash)
@@ -69,7 +72,7 @@ class Owner extends CI_Model
     function select($ownerid)
     {
         if (!is_int($ownerid)) //we probably have a username then
-            $this->id_by_uname($ownerid);
+            $ownerid=$this->id_by_uname($ownerid);
         
         $ownerid=(int)$ownerid;
         if (!$ownerid)
@@ -80,7 +83,8 @@ class Owner extends CI_Model
         if ($query->num_rows()!=1)
             return false;
         
-        $result=$query->result()[0];
+        $result=$query->result();
+        $result=$result[0];
         
         $this->ownerid=$ownerid;
         $this->uname=$result->uname;
