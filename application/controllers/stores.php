@@ -32,7 +32,7 @@ class Stores extends CI_Controller
         $result=$this->db->get('stores')->result();
         $result=$result[0];
         
-        $config['base_url']=base_url().'stores/';
+        $config['base_url']=base_url().'stores/page';
         $config['total_rows']=$result->count;
         $config['per_page']=20;
         
