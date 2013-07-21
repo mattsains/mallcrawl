@@ -14,7 +14,7 @@ class Owner extends CI_Model
     /// Allow only A-Z, dot, hyphen and numbers
     private function clean_uname($uname)
     {
-        return strtolower(preg_replace("/[^a-zA-Z\.\-0-9]",'',$uname)); 
+        return strtolower(preg_replace("[^a-zA-Z\.\-0-9]",'',$uname)); 
     }
     
     /// Returns true if the ownerid exists
