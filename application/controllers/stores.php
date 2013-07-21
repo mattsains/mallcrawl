@@ -151,8 +151,9 @@ class Stores extends CI_Controller
                             $this->db->delete('category-members');
                             //put in new categories
                             $categories=array();
-                            foreach ($this->input->post('categories') as $catid=>$junk)
-                                $categories[]=array('storeid'=>$storeid, 'categoryid'=>$catid);
+                            if ($this->input->post('categories'))
+                                foreach ($this->input->post('categories') as $catid=>$junk)
+                                    $categories[]=array('storeid'=>$storeid, 'categoryid'=>$catid);
                             $this->db->insert_batch('category-members',$categories);
                         $this->db->trans_complete();
                         
@@ -254,8 +255,9 @@ class Stores extends CI_Controller
                 
                 //this is a new store so no need to nuke existing categories
                 $categories=array();
-                foreach ($this->input->post('categories') as $catid=>$junk)
-                    $categories[]=array('storeid'=>$storeid, 'categoryid'=>$catid);
+                if($this->input->post('categories'))
+                    foreach ($this->input->post('categories') as $catid=>$junk)
+                        $categories[]=array('storeid'=>$storeid, 'categoryid'=>$catid);
                 $this->db->insert_batch('category-members',$categories);
                 
                 //ok now we might have the ugly problem of file uploads
