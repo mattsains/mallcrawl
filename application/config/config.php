@@ -359,7 +359,7 @@ $config['proxy_ips'] = '';
 
 $config['ssl-cert']='/etc/apache2/ssl-cert/verisign-fb.crt';
 $config['email']='matthew@sainsbury.za.net';
-$config['api-path']='/bettermall/';
-$config['api-dir']='../bettermall/';
+$config['api-path']='/api/';
+$config['api-dir']='../api/';
 /* End of file config.php */
 /* Location: ./application/config/config.php */
