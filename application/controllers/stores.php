@@ -152,9 +152,11 @@ class Stores extends CI_Controller
                             //put in new categories
                             $categories=array();
                             if ($this->input->post('categories'))
+                            {
                                 foreach ($this->input->post('categories') as $catid=>$junk)
                                     $categories[]=array('storeid'=>$storeid, 'categoryid'=>$catid);
-                            $this->db->insert_batch('category-members',$categories);
+                                $this->db->insert_batch('category-members',$categories);
+                            }
                         $this->db->trans_complete();
                         
                         //we're done, time to redirect to the form
@@ -256,9 +258,11 @@ class Stores extends CI_Controller
                 //this is a new store so no need to nuke existing categories
                 $categories=array();
                 if($this->input->post('categories'))
+                {
                     foreach ($this->input->post('categories') as $catid=>$junk)
                         $categories[]=array('storeid'=>$storeid, 'categoryid'=>$catid);
-                $this->db->insert_batch('category-members',$categories);
+                    $this->db->insert_batch('category-members',$categories);
+                }
                 
                 //ok now we might have the ugly problem of file uploads
                 if (isset($_FILES['logo']['name']) && $_FILES['logo']['name']!="")
