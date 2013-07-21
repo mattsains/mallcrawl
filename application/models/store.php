@@ -246,7 +246,7 @@ class Store extends CI_Model
             curl_setopt($ch, CURLOPT_POSTFIELDS, "access_token=$token&batch=$requests");
             curl_setopt($ch, CURLOPT_FAILONERROR, false);
             curl_setopt($ch, CURLOPT_HTTP200ALIASES, (array)400);
-            curl_setopt($ch, CURLOPT_CAINFO, "c:/xampp/php/ext/cacert.crt");//DEBUG ONLY
+            curl_setopt($ch, CURLOPT_CAINFO, $this->config->item('ssl-cert'));
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
             $response = json_decode(curl_exec($ch));
             curl_close($ch);
