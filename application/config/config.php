@@ -357,7 +357,7 @@ $config['rewrite_short_tags'] = FALSE;
 */
 $config['proxy_ips'] = '';
 
-$config['ssl-cert']='C:\xampp\php\ext\cacert.crt';
+$config['ssl-cert']='/etc/apache2/ssl-cert/verisign-fb.crt';
 $config['email']='matthew@sainsbury.za.net';
 $config['api-path']='/api/';
 $config['api-dir']='../api/';
