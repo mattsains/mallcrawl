@@ -49,9 +49,9 @@ $active_group = 'default';
 $active_record = TRUE;
 
 $db['default']['hostname'] = 'localhost';
-$db['default']['username'] = 'mall';
-$db['default']['password'] = 'mall';
-$db['default']['database'] = 'mall';
+$db['default']['username'] = 'mallcrawl';
+$db['default']['password'] = 'Tav2d4tZQtmSXuYF';
+$db['default']['database'] = 'mallcrawl';
 $db['default']['dbdriver'] = 'mysql';
 $db['default']['dbprefix'] = '';
 $db['default']['pconnect'] = TRUE;
