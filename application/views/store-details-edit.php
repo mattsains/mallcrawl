@@ -12,7 +12,9 @@
             <?php
                 foreach ($types as $type)
                 {
-                    echo "<option value=\"".$type['typeid']."\">".$type['text']."</option>";
+                    echo "<option value=\"".$type['typeid']."\" ";
+                    if ($type['typeid']==$typeid) echo "selected";
+                    echo ">".$type['text']."</option>";
                 }
             ?>
             </select>
