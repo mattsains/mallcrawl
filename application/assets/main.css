@@ -38,6 +38,24 @@ input, textarea, select
     margin-top:5px;
     width:215px;
 }
+div.checkboxes
+{
+    border: 1px solid #BBBBBB;
+    margin: 5px, 0, 5px, 0;
+    background-color: #DDDDDD;
+    padding: 5px;
+    width:409px;
+}
+div.checkboxes input, div.checkboxes label
+{
+    /* nothing here */
+    margin-left:inherit;
+    float:none;
+    display:inline;
+    height:inherit;
+    width:inherit;
+    vertical-align:middle;
+}
 span.error
 {
     border: 1px solid #C00000;
@@ -95,7 +113,7 @@ input.h2-like
     font-size:+5;
     font-weight:bold;
 }
-h3
+h3, h4
 {
     margin-bottom:0;
 }

@@ -78,6 +78,10 @@ class Stores extends CI_Controller
             {
                 //an edit
                 $this->load->library('form_validation');
+                
+                //get list of all categories
+                $allcats=$this->store->all_categories();
+                
                 if ($this->input->post('storeid'))
                 {
                     $this->form_validation->set_rules('name','Name','required|trim|max_length[50]|callback_html_special');
@@ -93,7 +97,7 @@ class Stores extends CI_Controller
                     {
                         //validation failed
                         $this->load->view('header',array('title'=>$this->store->name));
-                        $this->load->view('store-details-edit', array_merge($_POST,array('types'=>$this->store->all_types(),'submit_to'=>current_url().'?edit=1')));
+                        $this->load->view('store-details-edit', array_merge($_POST,array('categorydata'=>$allcats,'types'=>$this->store->all_types(),'submit_to'=>current_url().'?edit=1')));
                         $this->load->view('footer');
                     } else
                     {
@@ -138,14 +142,34 @@ class Stores extends CI_Controller
                         if (isset($logopath))
                           $to_update['logo']=$logopath;
                         $this->store->update($to_update);
+                        
+                        //start a transaction, I don't want this to go half way
+                        $this->db->trans_start();
+                            //nuke existing categories
+                            $this->db->where('storeid',$storeid);
+                            $this->db->delete('category-members');
+                            //put in new categories
+                            $categories=array();
+                            foreach ($this->input->post('categories') as $catid=>$junk)
+                                $categories[]=array('storeid'=>$storeid, 'categoryid'=>$catid);
+                            $this->db->insert_batch('category-members',$categories);
+                        $this->db->trans_complete();
+                        
                         //we're done, time to redirect to the form
                         redirect(site_url('stores/'.$storeid));
                     }
                 } else
                 {
                     //just show the form
+                    $cats=$this->store->categories();
+                    $categories=array();//needs a different structured array, this is it
+                    foreach ($cats as $category)
+                    {
+                        $categories[$category['categoryid']]="on";
+                    }
                     $this->load->view('header',array('title'=>$this->store->name));
-                    $this->load->view('store-details-edit', array_merge($this->store->as_array(),array('types'=>$this->store->all_types(),'submit_to'=>current_url().'?edit=1')));
+                    $this->load->view('store-details-edit', array_merge($this->store->as_array(),array('categories'=>$categories,'categorydata'=>$allcats,'types'=>$this->store->all_types(),
+                                                                                                       'submit_to'=>current_url().'?edit=1')));
                     $this->load->view('footer');
                 }
             } else
@@ -173,6 +197,7 @@ class Stores extends CI_Controller
         if ($this->input->post('name'))
         {
             $this->load->model(array('store','mall'));
+            
             //new store data coming through now
             $this->load->library('form_validation');
             $this->form_validation->set_rules('name','Name','required|trim|max_length[50]|callback_html_special');
@@ -188,7 +213,7 @@ class Stores extends CI_Controller
             {
                 //validation failed
                 $this->load->view('header',array('title'=>$this->store->name));
-                $this->load->view('store-details-edit', array_merge($_POST,array('types'=>$this->store->all_types(),'submit_to'=>current_url().'?edit=1')));
+                $this->load->view('store-details-edit', array_merge($_POST,array('categorydata'=>$this->store->all_categories(),'types'=>$this->store->all_types(),'submit_to'=>current_url().'?edit=1')));
                 $this->load->view('footer');
             } else
             {
@@ -215,14 +240,23 @@ class Stores extends CI_Controller
                                  'bio'=>$this->input->post('bio'),
                                  'ownerid'=>$this->owner->ownerid);
                 $storeid=$this->store->create($to_insert);
+                                
                 if (!$storeid)
                 {
                     show_error('Failed to create the new store :(');
                     return;//dunno if I need this?
                 }
+                
                 //I'm going to make a directory for this store now so we don't have to worry about it later
                 if (!is_dir($this->config->item('api-dir')."application/assets/stores/$storeid/"))
                     mkdir($this->config->item('api-dir')."application/assets/stores/$storeid/",0755,true);
+                
+                //this is a new store so no need to nuke existing categories
+                $categories=array();
+                foreach ($this->input->post('categories') as $catid=>$junk)
+                    $categories[]=array('storeid'=>$storeid, 'categoryid'=>$catid);
+                $this->db->insert_batch('category-members',$categories);
+                
                 //ok now we might have the ugly problem of file uploads
                 if (isset($_FILES['logo']['name']) && $_FILES['logo']['name']!="")
                 {
@@ -243,7 +277,7 @@ class Stores extends CI_Controller
                         //error with upload
                         //this is some magic over here: transparently transition to editing the mall
                         $this->load->view('header',array('title'=>$this->mall->name));
-                        $this->load->view('store-details-edit', array_merge($_POST,array('storeid'=>$storeid,'types'=>$this->store->all_types(),"logo_err"=>$this->upload->display_errors('<span class="error">','</span>'),'submit_to'=>base_url().'stores/'.$storeid.'?edit=1')));
+                        $this->load->view('store-details-edit', array_merge($_POST,array('categorydata'=>$this->store->all_categories(),'storeid'=>$storeid,'types'=>$this->store->all_types(),"logo_err"=>$this->upload->display_errors('<span class="error">','</span>'),'submit_to'=>base_url().'stores/'.$storeid.'?edit=1')));
                         $this->load->view('footer');
                         return;
                     }
@@ -268,7 +302,7 @@ class Stores extends CI_Controller
             $this->load->model('store');
             
             $this->load->view('header',array('title'=>'Add a store'));
-            $this->load->view('store-details-edit',array('secret'=>$this->input->post('secret'),'submit_to'=>base_url().'stores/new','types'=>$this->store->all_types()));
+            $this->load->view('store-details-edit',array('categorydata'=>$this->store->all_categories(),'secret'=>$this->input->post('secret'),'submit_to'=>base_url().'stores/new','types'=>$this->store->all_types()));
             $this->load->view('footer');
         }
         else if ($this->input->post('secret'))
@@ -311,7 +345,7 @@ class Stores extends CI_Controller
             $this->load->view('footer');
         }
     }
-    /// Does 
+    /// Makes sure we have a hexadecimal, and treats it nicely
     public function check_secret($secret)
     {
         $secret=strtolower(trim($secret));
@@ -328,5 +362,9 @@ class Stores extends CI_Controller
     public function make_phone($str)
     {
         return preg_replace("/[^0-9]/","",$str);//strips all but numbers
+    }
+    public function debug()
+    {
+        var_dump($_POST);
     }
 }

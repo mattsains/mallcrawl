@@ -42,7 +42,35 @@
         <?php echo form_error('bio','<span class="error">','</span>');?>
         <div><label for="bio">Bio:</label> <textarea name="bio" rows=5 ><?php if (isset($bio)) echo $bio; ?></textarea></div>
         
-        <!-- TODO: add a javascript category selector -->
+        <h4>Categories</h4>
+        <div class="checkboxes" id="box">
+        <input type="text" id="search" value="" style="display:none" />
+        <?php 
+            if (!isset($categories)) $categories=array(); //in case I don't want to send current categories selected
+            $count=0; //don't want to display more than ten categories at once
+            foreach ($categorydata as $cat)
+            {
+                $count++;
+                //figure out if this category is supposed to be selected for this store
+                //is there a more efficient way to do this?
+                $checkedflag="";
+                foreach ($categories as $selectedcat=>$junk)
+                {
+                    if ($selectedcat==$cat['categoryid'])
+                    {
+                        $checkedflag="checked";
+                        break;
+                    }   
+                }
+                
+                echo '<div tag="'.$cat['categoryname'].'"';
+                if ($count>=10) echo ' style="display:none"';
+                echo '><input type="checkbox" name="categories['.$cat['categoryid'].']" '.$checkedflag.' />';
+                echo ' <label for="categories['.$cat['categoryid'].']">'.$cat['categoryname'].'</label></div>';
+            }
+        ?>
+        </div>
+        
         <input type="submit"/>
     </span>
     </form>

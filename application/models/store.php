@@ -195,6 +195,17 @@ class Store extends CI_Model
         return $query->result_array();
     }
     
+    /// Gets all possible categories
+    /// STATELESS - works alone
+    function all_categories()
+    {
+        $query=$this->db->get('categories');
+        $categories=array();
+        foreach ($query->result() as $row)
+            $categories[]=array('categoryid'=>$row->categoryid, 'categoryname'=>$row->text);
+        return $categories;
+    }
+    
     /// Returns a list of image URLs, their author, and timestamp
     /// Access token seems needed for facebook batch jobs
     function images($token, $fail_count=0)

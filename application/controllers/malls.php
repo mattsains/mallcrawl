@@ -160,7 +160,6 @@ class Malls extends CI_Controller
                                 $logopath=$mallid.'/'.$data['file_name'];
                             }
                         }
-                        //TODO
                         //update database
                         $to_update=array('name'=>$this->input->post('name'),
                                         'manager_name'=>$this->input->post('manager_name'),
