@@ -17,7 +17,8 @@ class Stores extends CI_Controller
     /// If the user is an admin, shows all the malls
     public function page($page=0)
     {
-        $page=(int)$page;
+        if (count($page)==0) $page=0;
+        $page=(int)$page[0];
         $this->owner->login();
         //might as well paginate
         $this->load->library('pagination');
