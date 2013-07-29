@@ -35,12 +35,12 @@
             }
         </script>
     <?php } ?>
-    <script type="text/javascript" src="<?php echo base_url();?>assets/categoryselect.js">
-    </script>
+    <?php if(ISSET($catjs)){ ?><script type="text/javascript" src="<?php echo base_url();?>assets/categoryselect.js">
+    </script><?php } ?>
     
 </head>
 
-<body onload="onlload();" <?php if (ISSET($map)) echo 'onload="map_initialize();"';?>>
+<body <?php if(ISSET($catjs)) echo 'onload="onlload();"'; ?> <?php if (ISSET($map)) echo 'onload="map_initialize();"';?>>
     <h1>Mall Crawl Administration</h1>
     <nav>
         <ul>
