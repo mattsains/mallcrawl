@@ -187,6 +187,7 @@ class Store extends CI_Model
                 $output[$key][$optfield]=ISSET($output[$key][$optfield])?$output[$key][$optfield]:false;
             if ($output[$key]['logo'])
                 $output[$key]['logo']=$this->config->item('api-path').'assets/stores/'.$output[$key]['logo'];
+            else $output[$key]['logo']=$this->config->item('api-path').'assets/lost.jpg';
         }
         return $output;
     }

@@ -124,7 +124,7 @@ class Mall extends CI_Model
         $logopath=$result->logo;
         $mappath=$result->map;
         $polygonpath=$result->polygon_path;
-        $this->logo=$logopath?$this->config->item('api-path').'assets/malls/'.$logopath:false;
+        $this->logo=$logopath?$this->config->item('api-path').'assets/malls/'.$logopath:($this->config->item('api-path').'assets/lost.jpg');
         $this->map=$mappath?$this->config->item('api-path').'assets/malls/'.$mappath:false;
         $this->polygons=$polygonpath?$this->config->item('api-path').'assets/malls/'.$polygonpath:false;
         return true;
@@ -151,7 +151,7 @@ class Mall extends CI_Model
         $logopath=$result->logo;
         $mappath=$result->map;
         $polygonpath=$result->polygon_path;
-        $this->logo=$logopath?$this->config->item('api-path').'assets/malls/'.$logopath:false;
+        $this->logo=$logopath?$this->config->item('api-path').'assets/malls/'.$logopath:($this->config->item('api-path').'assets/lost.jpg');
         $this->map=$mappath?$this->config->item('api-path').'assets/malls/'.$mappath:false;
         $this->polygons=$polygonpath?$this->config->item('api-path').'assets/malls/'.$polygonpath:false;
         return $this->mallid;
