@@ -2,7 +2,6 @@
 class Mall extends CI_Model
 {
     // fields which can be automatically populated
-    private $fields=array('mallid','ownerid','name','x_coord','y_coord','secret','manager_name','bio','website','twitter','facebook','phone','email');
     private $fields=array('mallid','ownerid','name','x_coord','y_coord','province','city','secret','manager_name','bio','website','twitter','facebook','phone','email');
     
     public $mallid=false;
@@ -67,28 +66,6 @@ class Mall extends CI_Model
         
         $this->db->select('mallid');
         $this->db->where('mallid',$mallid);
-        $query=$this->db->get('malls');
-        return $query->num_rows()>0;
-    }
-    /// Creates a new mall
-    ///  data is an associative array with the new mall's data
-    function create($data)
-    {
-        //check for compulsory fields
-        if (!($data['ownerid'] && $data['name'] && $data['x_coord'] && $data['y_coord'] && $data['manager_name'] && $data['phone']))
-            return false;
-            
-        //some cleansing
-        $data['manager_name']=strip_tags($data['manager_name']);
-        $data['bio']=strip_tags($data['bio']);
-        
-        $this->load->model('owner');
-        if (!$this->owner->exists($data['ownerid'])) return false;
-        
-        //time for a bit of preprocessing before database
-        $secret=rand_hex(8);
-        //there's probably a better way to do this
-        $insert=array('ownerid'=>(int)$data['ownerid'], 'name'=>$data['name'], 'logo'=>isset($data['logo'])?$data['logo']:null, 'x_coord'=>(double)$data['x_coord'], 'y_coord'=>(double)$data['y_coord'],
         $query=$this->db->get('malls');
         return $query->num_rows()>0;
     }

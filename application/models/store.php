@@ -2,7 +2,6 @@
 class Store extends CI_Model
 {
     // fields which can be automatically populated
-    private $fields=array('storeid','mallid','typeid','ownerid','manager_name','name','email','bio','facebook','twitter','website','phone');
     private $fields=array('storeid','mallid','typeid','ownerid','manager_name','name','logo','email','bio','facebook','twitter','website','phone');
     
     public $storeid=false;
