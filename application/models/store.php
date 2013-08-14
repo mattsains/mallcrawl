@@ -3,6 +3,7 @@ class Store extends CI_Model
 {
     // fields which can be automatically populated
     private $fields=array('storeid','mallid','typeid','ownerid','manager_name','name','email','bio','facebook','twitter','website','phone');
+    private $fields=array('storeid','mallid','typeid','ownerid','manager_name','name','logo','email','bio','facebook','twitter','website','phone');
     
     public $storeid=false;
     public $mallid=false;
@@ -10,6 +11,7 @@ class Store extends CI_Model
     public $ownerid=false;
     public $manager_name=false;
     public $name=false;
+    public $logo=false;
     public $email=false;
     public $bio=false;
     public $facebook=false;
@@ -93,11 +95,12 @@ class Store extends CI_Model
         
         //auto-populate fields
         foreach ($this->fields as $field)
-            $this->$field=ISSET($result->$field)?
+            $this->$field=(ISSET($result->$field) && $result->$field!="")?
                             $result->$field : false;
+        //turn the logo into an actual URL
+        if ($this->logo)
+            $this->logo=$this->config->item('api-path').'assets/stores/'.$this->logo;
         
-        $logopath=$result->logo;
-        $this->logo=$logopath?$this->config->item('api-path').'assets/stores/'.$logopath:false;
         // now figure out the name of the type of mall this is
         $typeid=(int)$this->typeid;
         $this->db->where('typeid',$typeid);
@@ -119,7 +122,7 @@ class Store extends CI_Model
         if (!$this->mallid)
             return false;
         
-        $return_fields=array('storeid','mallid','typeid','type_name','name','manager_name','bio','website','twitter','facebook','phone','email','logo');
+        $return_fields=array('storeid','mallid','typeid','type_name','name','logo','manager_name','bio','website','twitter','facebook','phone','email');
         
         $output=array();
         
@@ -171,7 +174,7 @@ class Store extends CI_Model
         $this->load->model('mall');
         if (!$this->mall->exists($mallid)) return false;
         
-        $query=$this->db->query('SELECT `stores`.`storeid`, `stores`.`ownerid`, `owners`.`uname`, `stores`.`typeid`, `types`.`text` AS `typename`, `stores`.`name`, `stores`.`manager_name`, `stores`.`email`, `stores`.`bio`, `stores`.`facebook`, `stores`.`twitter`, `stores`.`website`,`stores`.`phone`'.
+        $query=$this->db->query('SELECT `stores`.`storeid`, `stores`.`ownerid`, `owners`.`uname`, `stores`.`typeid`, `types`.`text` AS `typename`, `stores`.`name`, `stores`.`logo`, `stores`.`manager_name`, `stores`.`email`, `stores`.`bio`, `stores`.`facebook`, `stores`.`twitter`, `stores`.`website`,`stores`.`phone`'.
                                 ' FROM `stores` LEFT JOIN `types` ON `stores`.`typeid`=`types`.`typeid`'.
                                 ' LEFT JOIN `owners` on `stores`.`ownerid`=`owners`.`ownerid`'.
                                 ' WHERE `stores`.`mallid`='.$mallid.
@@ -180,9 +183,11 @@ class Store extends CI_Model
         foreach($output as $key=>$store)
         {
             $output[$key]['categories']=$this->categories($output[$key]['storeid']);
-            $optional=array('typename','email','facebook','twitter','website');
+            $optional=array('typename','email','facebook','twitter','website','logo');
             foreach($optional as $optfield)
                 $output[$key][$optfield]=ISSET($output[$key][$optfield])?$output[$key][$optfield]:false;
+            if ($output[$key]['logo'])
+                $output[$key]['logo']=$this->config->item('api-path').'assets/stores/'.$output[$key]['logo'];
         }
         return $output;
     }
@@ -216,7 +221,8 @@ class Store extends CI_Model
             error('The access token is invalid');
         
         $this->storeid=(int)$this->storeid;
-        $query=$this->db->query('SELECT `store-images`.`image`, `store-images`.`thumb`, `store-images`.`userid`, UNIX_TIMESTAMP(`store-images`.`timestamp`) AS `timestamp` FROM `store-images` ORDER BY `store-images`.`timestamp` DESC');
+
+        $query=$this->db->query('SELECT `store-images`.`image`, `store-images`.`thumb`, `store-images`.`userid`, UNIX_TIMESTAMP(`store-images`.`timestamp`) AS `timestamp` FROM `store-images` WHERE `storeid`='.$this->storeid.' ORDER BY `store-images`.`timestamp` DESC');
         
         $output=array();
         $userids=array();
@@ -246,6 +252,8 @@ class Store extends CI_Model
             curl_setopt($ch, CURLOPT_POSTFIELDS, "access_token=$token&batch=$requests");
             curl_setopt($ch, CURLOPT_FAILONERROR, false);
             curl_setopt($ch, CURLOPT_HTTP200ALIASES, (array)400);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
             curl_setopt($ch, CURLOPT_CAINFO, $this->config->item('ssl-cert'));
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
             $response = json_decode(curl_exec($ch));
