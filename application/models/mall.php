@@ -127,7 +127,7 @@ class Mall extends CI_Model
         $logopath=$result->logo;
         $mappath=$result->map;
         $polygonpath=$result->polygon_path;
-        $this->logo=$logopath?base_url().'assets/malls/'.$logopath:false;
+        $this->logo=$logopath?base_url().'assets/malls/'.$logopath:(base_url().'assets/lost.jpg');
         $this->map=$mappath?base_url().'assets/malls/'.$mappath:false;
         $this->polygons=$polygonpath?base_url().'assets/malls/'.$polygonpath:false;
         return true;
