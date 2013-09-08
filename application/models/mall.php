@@ -2,13 +2,15 @@
 class Mall extends CI_Model
 {
     // fields which can be automatically populated
-    private $fields=array('mallid','ownerid','name','x_coord','y_coord','secret','manager_name','bio','website','twitter','facebook','phone','email');
+    private $fields=array('mallid','ownerid','name','x_coord','y_coord','province','city','secret','manager_name','bio','website','twitter','facebook','phone','email');
     
     public $mallid=false;
     public $ownerid=false;
     public $name=false;
     public $x_coord=false;
     public $y_coord=false;
+    public $province=false;
+    public $city=false;
     public $secret=false; //lol, but it isn't too big a secret!
     public $manager_name=false;
     public $bio=false;
@@ -70,7 +72,7 @@ class Mall extends CI_Model
         $secret=rand_hex(8);
         //there's probably a better way to do this
         $insert=array('ownerid'=>(int)$data['ownerid'], 'name'=>$data['name'], 'logo'=>isset($data['logo'])?$data['logo']:null, 'x_coord'=>(double)$data['x_coord'], 'y_coord'=>(double)$data['y_coord'],
-                      'map'=>isset($data['map'])?$data['map']:null, 'secret'=>$secret, 'manager_name'=>$data['manager_name'], 'bio'=>$data['bio'],
+                      'province'=>isset($data['province'])?$data['province']:null,'city'=>isset($data['city'])?$data['city']:null,'map'=>isset($data['map'])?$data['map']:null, 'secret'=>$secret, 'manager_name'=>$data['manager_name'], 'bio'=>$data['bio'],
                       'website'=>isset($data['website'])?$data['website']:null, 'facebook'=>isset($data['facebook'])?$data['facebook']:null, 
                       'twitter'=>isset($data['twitter'])?$data['twitter']:null, 'phone'=>$data['phone'], 'email'=>isset($data['email'])?$data['email']:null,
                       'polygon_path'=>isset($data['polygon_path'])?$data['polygon_path']:null);
@@ -144,7 +146,7 @@ class Mall extends CI_Model
         if (!$this->mallid)
             return false;
         
-        $return_fields=array('mallid','name','secret','x_coord','y_coord','manager_name','bio','website','twitter','facebook','phone','email','logo','map','polygons');
+        $return_fields=array('mallid','name','secret','x_coord','y_coord','province','city','manager_name','bio','website','twitter','facebook','phone','email','logo','map','polygons');
         
         $output=array();
         

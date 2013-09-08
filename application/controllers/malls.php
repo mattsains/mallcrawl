@@ -82,6 +82,8 @@ class Malls extends CI_Controller
                 if ($this->input->post('mallid'))
                 {
                     $this->form_validation->set_rules('name','Name','required|trim|max_length[50]|callback_html_special');
+                    $this->form_validation->set_rules('province','Province','trim|callback_provinces');
+                    $this->form_validation->set_rules('city','City','trim|max_length[50]|callback_html_special');
                     $this->form_validation->set_rules('manager_name','Manager Name','required|trim|max_length[50]|callback_html_special');
                     $this->form_validation->set_rules('website','Website','trim|max_length[60]|callback_html_special');
                     $this->form_validation->set_rules('twitter','Twitter','trim|max_length[60]|callback_html_special');
@@ -162,6 +164,8 @@ class Malls extends CI_Controller
                         }
                         //update database
                         $to_update=array('name'=>$this->input->post('name'),
+                                        'province'=>$this->input->post('province'),
+                                        'city'=>$this->input->post('city'),
                                         'manager_name'=>$this->input->post('manager_name'),
                                         'website'=>$this->input->post('website'),
                                         'twitter'=>$this->input->post('twitter'),
@@ -210,6 +214,8 @@ class Malls extends CI_Controller
         if ($this->input->post('name'))//form data to check
         {
             $this->form_validation->set_rules('name','Name','required|trim|max_length[50]|callback_html_special');
+            $this->form_validation->set_rules('province','Province','trim|callback_provinces');
+            $this->form_validation->set_rules('city','City','trim|max_length[50]|callback_html_special');
             $this->form_validation->set_rules('manager_name','Manager Name','required|trim|max_length[50]|callback_html_special');
             $this->form_validation->set_rules('website','Website','trim|max_length[60]|callback_html_special');
             $this->form_validation->set_rules('twitter','Twitter','trim|max_length[60]|callback_html_special');
@@ -236,6 +242,8 @@ class Malls extends CI_Controller
                                 'manager_name'=>$this->input->post('manager_name'),
                                 'x_coord'=>$this->input->post('x_coord'),
                                 'y_coord'=>$this->input->post('y_coord'),
+                                'province'=>$this->input->post('province'),
+                                'city'=>$this->input->post('city'),
                                 'website'=>$this->input->post('website'),
                                 'twitter'=>$this->input->post('twitter'),
                                 'facebook'=>$this->input->post('facebook'),
@@ -329,7 +337,7 @@ class Malls extends CI_Controller
             //just show the form
             $this->load->view('header',array('title'=>'New mall','map'=>array('x_coord'=>'-33.93472657551387','y_coord'=>'25.569795862731894')));
             $this->load->view('mall-details-edit', array('submit_to'=>current_url(),
-                                                         'mallid'=>'', 'name'=>'', 'manager_name'=>'', 'x_coord'=>'-33.93472657551387', 'y_coord'=>'25.569795862731894', 'website'=>'', 'twitter'=>'', 'facebook'=>'', 'phone'=>'', 'email'=>'', 'bio'=>''));
+                                                         'mallid'=>'', 'name'=>'', 'manager_name'=>'', 'x_coord'=>'-33.93472657551387', 'y_coord'=>'25.569795862731894', 'province'=>'','city'=>'','website'=>'', 'twitter'=>'', 'facebook'=>'', 'phone'=>'', 'email'=>'', 'bio'=>''));
             $this->load->view('footer');
         }
     }
@@ -340,5 +348,13 @@ class Malls extends CI_Controller
     public function make_phone($str)
     {
         return preg_replace("/[^0-9]/","",$str);//strips all but numbers
+    }
+    public function provinces($str)
+    {
+        if (in_array($str, array("","Eastern Cape","Free State","Gauteng","KwaZulu-Natal","Limpopo","Mpumalanga","North West","Northern Cape","Western Cape"))) return true;
+        else
+        {
+            $this->form_validation->set_message('province', 'Please select a %s from the list');
+        }
     }
 }
