@@ -34,13 +34,12 @@
             <?php } ?>
             }
         </script>
-    <?php } ?>
-    <script type="text/javascript" src="<?php echo base_url();?>assets/categoryselect.js">
-    </script>
+    <?php } 
+    if (isset($store)) echo '<script type="text/javascript" src="<?php echo base_url();?>assets/categoryselect.js"></script>'; ?>
     
 </head>
 
-<body onload="onlload();" <?php if (ISSET($map)) echo 'onload="map_initialize();"';?>>
+<body <?php if (ISSET($map)) echo 'onload="map_initialize();"'; else if (isset($store)) echo 'onload="onlload();"'; ?>>
     <h1>Mall Crawl Administration</h1>
     <nav>
         <ul>

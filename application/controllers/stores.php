@@ -97,7 +97,7 @@ class Stores extends CI_Controller
                     if (!$this->form_validation->run())
                     {
                         //validation failed
-                        $this->load->view('header',array('title'=>$this->store->name));
+                        $this->load->view('header',array('title'=>$this->store->name,'store'=>true));
                         $this->load->view('store-details-edit', array_merge($_POST,array('typeid'=>$this->store->typeid,'categorydata'=>$allcats,'types'=>$this->store->all_types(),'submit_to'=>current_url().'?edit=1')));
                         $this->load->view('footer');
                     } else
@@ -119,7 +119,7 @@ class Stores extends CI_Controller
                             if (!$this->upload->do_upload('logo'))
                             {
                                 //error with upload
-                                $this->load->view('header',array('title'=>$this->mall->name));
+                                $this->load->view('header',array('title'=>$this->mall->name,'store'=>true));
                                 $this->load->view('store-details-edit', array_merge($_POST,array('typeid'=>$this->store->typeid,'types'=>$this->store->all_types(),"logo_err"=>$this->upload->display_errors('<span class="error">','</span>'),'submit_to'=>current_url().'?edit=1')));
                                 $this->load->view('footer');
                                 return;
@@ -168,7 +168,7 @@ class Stores extends CI_Controller
                     {
                         $categories[$category['categoryid']]="on";
                     }
-                    $this->load->view('header',array('title'=>$this->store->name));
+                    $this->load->view('header',array('title'=>$this->store->name,'store'=>true));
                     $this->load->view('store-details-edit', array_merge($this->store->as_array(),array('categories'=>$categories,'categorydata'=>$allcats,'types'=>$this->store->all_types(),
                                                                                                        'submit_to'=>current_url().'?edit=1')));
                     $this->load->view('footer');
@@ -181,7 +181,7 @@ class Stores extends CI_Controller
                     //attached to a mall. I should hope this is true
                     $store['mall']=$this->mall->name;
                     
-                $this->load->view('header',array('title'=>$this->store->name,));
+                $this->load->view('header',array('title'=>$this->store->name,'store'=>true));
                 $this->load->view('store-details',$store);
                 $this->load->view('footer');
             } 
@@ -213,7 +213,7 @@ class Stores extends CI_Controller
             if (!$this->form_validation->run())
             {
                 //validation failed
-                $this->load->view('header',array('title'=>$this->store->name));
+                $this->load->view('header',array('title'=>$this->store->name,'store'=>true));
                 $this->load->view('store-details-edit', array_merge($_POST,array('categorydata'=>$this->store->all_categories(),'typeid'=>$this->store->typeid,'types'=>$this->store->all_types(),'submit_to'=>current_url().'?edit=1')));
                 $this->load->view('footer');
             } else
@@ -276,8 +276,8 @@ class Stores extends CI_Controller
                     if (!$this->upload->do_upload('logo'))
                     {
                         //error with upload
-                        //this is some magic over here: transparently transition to editing the mall
-                        $this->load->view('header',array('title'=>$this->mall->name));
+                        //this is some magic over here: transparently transition to editing the store
+                        $this->load->view('header',array('title'=>$this->store->name,'store'=>true));
                         $this->load->view('store-details-edit', array_merge($_POST,array('typeid'=>$this->store->typeid,'categorydata'=>$this->store->all_categories(),'storeid'=>$storeid,'types'=>$this->store->all_types(),"logo_err"=>$this->upload->display_errors('<span class="error">','</span>'),'submit_to'=>base_url().'stores/'.$storeid.'?edit=1')));
                         $this->load->view('footer');
                         return;
@@ -302,7 +302,7 @@ class Stores extends CI_Controller
             //well even if the secret is wrong, it'll be checked when this form gets submitted
             $this->load->model('store');
             
-            $this->load->view('header',array('title'=>'Add a store'));
+            $this->load->view('header',array('title'=>'Add a store','store'=>true));
             $this->load->view('store-details-edit',array('typeid'=>-1, 'categorydata'=>$this->store->all_categories(),'secret'=>$this->input->post('secret'),'submit_to'=>base_url().'stores/new','types'=>$this->store->all_types()));
             $this->load->view('footer');
         }
@@ -311,7 +311,7 @@ class Stores extends CI_Controller
             //make sure the owner wants to add to this mall
             if (!$this->check_secret($this->input->post('secret')))
             {
-                $this->load->view('header',array('title'=>'Add a store'));
+                $this->load->view('header',array('title'=>'Add a store','store'=>true));
                 $this->load->view('secret-verify',array('msg'=>'That secret is invalid. Secrets contain only numbers and the letters A-F'));
                 $this->load->view('footer');
             } else 
@@ -325,7 +325,7 @@ class Stores extends CI_Controller
                 if (!$mallid)
                 {
                     //no such secret
-                    $this->load->view('header',array('title'=>'Add a store'));
+                    $this->load->view('header',array('title'=>'Add a store','store'=>true));
                     $this->load->view('secret-verify',array('msg'=>'There is no mall with such a secret','secret'=>$secret));
                     $this->load->view('footer');
                 }
@@ -333,7 +333,7 @@ class Stores extends CI_Controller
                 {
                     //this secret is bona fide
                     //show the next form
-                    $this->load->view('header',array('title'=>'Add a store'));
+                    $this->load->view('header',array('title'=>'Add a store','store'=>true));
                     $this->load->view('secret-verify',array('mall'=>$this->mall->as_array()));
                     $this->load->view('footer');
                 }
@@ -341,7 +341,7 @@ class Stores extends CI_Controller
         } else
         {
             //ask for a secret
-            $this->load->view('header',array('title'=>'Add a store'));
+            $this->load->view('header',array('title'=>'Add a store','store'=>true));
             $this->load->view('secret-verify');
             $this->load->view('footer');
         }

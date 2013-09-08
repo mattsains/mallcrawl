@@ -1,6 +1,9 @@
 <section id="main_content">
     <?php echo form_open_multipart($submit_to);?>
-    <div id="map_canvas"></div>
+    <div class="map_container">
+        <p>Click and drag the red marker to your mall's location:</p>
+        <div id="map_canvas"></div>
+    </div>
     <input type="hidden" name="mallid" value="<?php echo $mallid;?>" />
     <input type="hidden" name="x_coord" id="x_coord" value="<?php echo $x_coord;?>" />
     <input type="hidden" name="y_coord" id="y_coord" value="<?php echo $y_coord;?>" />
