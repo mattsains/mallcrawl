@@ -5,7 +5,9 @@
     <h2 class="title"><?php echo $name; ?></h3>
     <div style="text-align:center;"><a href="?edit=1">[edit]</a></div>
     <span class="fields">
-    <div><span class="label">Manager:</span> <?php echo $manager_name; ?></div>
+        <div><span class="label">Province:</span> <?php echo $province; ?></div>
+        <div><span class="label">City:</span> <?php echo $city; ?></div>
+        <div><span class="label">Manager:</span> <?php echo $manager_name; ?></div>
         <div><span class="label">Map:</span> <a href="<?php echo $map;?>">Click here to view map</a></div>
         <div><span class="label">Secret:</span> <?php echo $secret;?></div>
         <div><span class="label">Website:</span> <a href="<?php echo $website;?>"><?php echo $website;?></a></div>

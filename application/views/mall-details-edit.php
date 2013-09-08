@@ -7,6 +7,23 @@
     <span class="fields">
         <?php echo form_error('name','<span class="error">','</span>');?>
         <div><label for="name">Name:</label> <input type="text" class="h2-like" name="name" value="<?php echo set_value('name',$name); ?>"/></div>
+        <?php echo form_error('province','<span class="error">','</span>');?>
+        <div><label for="province">Province:</label> 
+        <?php $province_sel=isset($province)?$province:"";?>
+            <select name="province">
+                <option value="" disabled <?php if ($province_sel=="") echo "selected";?>></option>
+                <option value="Eastern Cape" <?php if ($province_sel=="Eastern Cape") echo "selected";?>>Eastern Cape</option>
+                <option value="Free State" <?php if ($province_sel=="Free State") echo "selected";?>>Free State</option>
+                <option value="Gauteng" <?php if ($province_sel=="Gauteng") echo "selected";?>>Gauteng</option>
+                <option value="KwaZulu-Natal" <?php if ($province_sel=="KwaZulu-Natal") echo "selected";?>>KwaZulu-Natal</option>
+                <option value="Limpopo" <?php if ($province_sel=="Limpopo") echo "selected";?>>Limpopo</option>
+                <option value="Mpumalanga" <?php if ($province_sel=="Mpumalanga") echo "selected";?>>Mpumalanga</option>
+                <option value="North West" <?php if ($province_sel=="North West") echo "selected";?>>North West</option>
+                <option value="Northern Cape" <?php if ($province_sel=="Northern Cape") echo "selected";?>>Northern Cape</option>
+                <option value="Western Cape" <?php if ($province_sel=="Western Cape") echo "selected";?>>Western Cape</option>
+            </select></div>
+        <?php echo form_error('city','<span class="error">','</span>');?>
+        <div><label for="city">City:</label> <input type="text" name="city" value="<?php echo set_value('city',$city); ?>"/></div>
         <?php echo form_error('manager_name','<span class="error">','</span>');?>
         <div><label for="manager_name">Manager:</label> <input type="text" name="manager_name" value="<?php echo set_value('manager_name',$manager_name); ?>"/></div>
         <?php if (isset($map_err)) echo $map_err;?>

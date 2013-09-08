@@ -93,7 +93,7 @@ span.label
 }
 span.fields
 {
-    display:inline-block;
+    display:block;
     padding-left:20%;
 }
 img.logo
